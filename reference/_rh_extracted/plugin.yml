@@ -1,0 +1,78 @@
+name: RegentHeadHunting
+version: '1.0-SNAPSHOT'
+main: me.tgsocodes.regentHeadHunting.RegentHeadHunting
+api-version: '1.21'
+load: POSTWORLD
+authors: [ TGSoCodes ]
+description: A fully featured HeadHunting plugin with levels, perks, missions, and spawner shop.
+softdepend: [ Vault, PlaceholderAPI, Factions, WildStacker ]
+
+commands:
+  hh:
+    description: Open the HeadHunting menu or view help
+    usage: /hh [help [page]]
+    aliases: [ headhunting ]
+  hhadmin:
+    description: Admin commands for HeadHunting
+    usage: /hhadmin <subcommand>
+    permission: headhunting.admin
+  hhmission:
+    description: Open the max level missions menu or start a mission
+    usage: /hhmission [start <id> | list]
+    permission: headhunting.maxmissions
+  mhhshop:
+    description: Open the Max Hunter Head shop (max level players only)
+    usage: /mhhshop
+    permission: headhunting.mhhshop
+  booster:
+    description: View your active booster status
+    usage: /booster
+    permission: headhunting.use
+  boosterpause:
+    description: Pause your active booster(s)
+    usage: /boosterpause [MONEY|XP]
+    permission: headhunting.use
+  boosterrestart:
+    description: Resume your paused booster(s)
+    usage: /boosterrestart [MONEY|XP]
+    permission: headhunting.use
+  hhhelp:
+    description: Show HeadHunting command help
+    usage: /hhhelp [page]
+    aliases: [ hhelp, hhh ]
+    permission: headhunting.use
+
+permissions:
+  headhunting.use:
+    description: Allows use of /hh
+    default: true
+  headhunting.admin:
+    description: Allows use of /hhadmin
+    default: op
+  headhunting.sellheads:
+    description: Allows selling heads
+    default: true
+  headhunting.missions:
+    description: Allows access to missions
+    default: true
+  headhunting.spawnershop:
+    description: Allows access to spawner shop
+    default: true
+  headhunting.perks:
+    description: Allows access to perks
+    default: true
+  headhunting.placespawner:
+    description: Allows placing spawners
+    default: true
+  headhunting.silktouch.bypass:
+    description: Allows mining spawners without silk touch
+    default: op
+  headhunting.maxmissions:
+    description: Allows access to max level missions via /hhmission
+    default: true
+  headhunting.mhhshop:
+    description: Allows access to /mhhshop
+    default: true
+  headhunting.fragments:
+    description: Allows use of spawner fragments
+    default: true

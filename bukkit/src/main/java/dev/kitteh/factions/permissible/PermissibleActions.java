@@ -61,6 +61,21 @@ public enum PermissibleActions implements PermissibleAction {
     UPGRADE(tl -> tl.getUpgrade(), tl -> tl.getUpgradeShort()),
 
     ZONE(tl -> tl.getZone(), tl -> tl.getZoneShort(), Upgrades.ZONES),
+
+    // Custom faction-perms additions
+    TAG("Change faction tag/name", "Change tag"),
+    DESCRIPTION("Change faction description", "Change desc"),
+    MOTD("Change faction MOTD", "Change MOTD"),
+    STATUS("Change faction status (open/peaceful/etc.)", "Change status"),
+    MANAGEPERMS("Modify faction permissions GUI", "Manage perms"),
+    RELATION("Change faction relations with other factions", "Manage relations"),
+    TITLE("Set member titles", "Set title"),
+    PV("Use the faction private vault", "Use PV"),
+    EFFECTS("Use faction effects", "Use effects"),
+    CHUNKITEMS("Use chunk items (chunk busters etc.)", "Chunk items"),
+    INSPECT("Use /f inspect", "Inspect"),
+    LOGS("View /f logs (faction activity audit)", "View logs"),
+    BANKDEPOSIT("Deposit to faction bank", "Bank deposit"),
     ;
 
     private final String desc;
@@ -75,6 +90,12 @@ public enum PermissibleActions implements PermissibleAction {
     PermissibleActions(Function<TranslationsConfig.Protection.Permissions, String> desc, Function<TranslationsConfig.Protection.Permissions, String> shortDesc, Upgrade prerequisite) {
         this(desc, shortDesc);
         this.prerequisite = prerequisite;
+    }
+
+    // Plain-string constructor for custom additions that aren't in the translation file
+    PermissibleActions(String desc, String shortDesc) {
+        this.desc = desc;
+        this.shortDesc = shortDesc;
     }
 
     @Override

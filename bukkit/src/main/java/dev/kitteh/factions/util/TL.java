@@ -637,7 +637,7 @@ public enum TL {
     FACTIONS_ANNOUNCEMENT_BOTTOM("faction-announcement-bottom", "&d--Unread Faction Announcements--"),
     FACTION_LOGIN("faction-login", "&e%1$s &9logged in."),
     FACTION_LOGOUT("faction-logout", "&e%1$s &9logged out.."),
-    NOFACTION_PREFIX("nofactions-prefix", "&6[&ano-faction&6]&r"),
+    NOFACTION_PREFIX("nofactions-prefix", "&2Wild&r"),
     DATE_FORMAT("date-format", "MM/d/yy h:ma"), // 3/31/15 07:49AM
 
     /**

@@ -407,7 +407,7 @@ public class TranslationsConfig {
 
         public static class Chat extends AbsCommand {
             protected Chat() {
-                super("Change chat mode", "chat");
+                super("Change chat mode", "chat", "c");
             }
         }
 
@@ -703,6 +703,7 @@ public class TranslationsConfig {
                 {
                     this.add("<fuuid:title><faction>");
                     this.add("<gold>Description: <yellow><faction:description>");
+                    this.add("<gold>Faction Level: <light_purple><faction:level> <dark_gray>(<faction:xp_progress>)</dark_gray>");
                     this.add("<gold><faction:if_open>No invitation required</faction:if_open><faction:if_open:else>Invitation required</faction:if_open:else><faction:if_peaceful>.    <fuuid:color:peaceful>Peaceful");
                     this.add("<gold>Land / Power / Max Power: <yellow><faction:claims_count></yellow> / <yellow><faction:power></yellow> / <yellow><faction:power_max>");
                     this.add("<gold>Raidable: <faction:if_raidable><green>Yes</faction:if_raidable><faction:if_raidable:else><red>No");
@@ -1071,7 +1072,7 @@ public class TranslationsConfig {
             private String denySelfFaction = "<red>You cannot set a relation with your own faction!";
             private String denyAlreadySet = "<red>Your faction already wishes this relation with <faction>.";
             private String updated = "<yellow>Your faction is now <relation> to <faction>.";
-            private String proposal = "<yellow><faction> wishes to be your <relation>. To accept, run or click <white><click:run_command:\"/<command>\">/<command></click>.";
+            private String proposal = "<yellow><faction> wishes to be your <relation>. To accept, run or click <white><click:suggest_command:\"/<command>\">/<command></click>.";
             private String proposalSent = "<yellow><faction> were informed that you wish to be <relation>.";
             private String peacefulSelf = "<yellow>This will have little effect while your faction is peaceful.";
             private String peacefulThem = "<yellow>This will have little effect while their faction is peaceful.";
@@ -1457,7 +1458,7 @@ public class TranslationsConfig {
 
         public static class Warp extends AbsCommand {
             protected Warp() {
-                super("Teleport to a faction warp", "warp");
+                super("Teleport to a faction warp", "warp", "warps");
             }
 
             private String noPermission = "<red>You do not have permission to use <faction> warps.";
@@ -2694,8 +2695,8 @@ public class TranslationsConfig {
     public static class Scoreboard {
         public static class Constant {
 
-            private String prefixTemplate = "<faction:relation_color>[<faction:name>] </faction:relation_color> ";
-            private String suffixTemplate = " <faction:relation_color>[<faction:name>]";
+            private String prefixTemplate = "<faction:relation_color>[<faction:name_clean>] </faction:relation_color> ";
+            private String suffixTemplate = " <faction:relation_color>[<faction:name_clean>]";
 
             private List<String> normalContent = new ArrayList<>() {
                 {

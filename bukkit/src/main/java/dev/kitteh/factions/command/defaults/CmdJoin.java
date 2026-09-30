@@ -70,7 +70,7 @@ public class CmdJoin implements Cmd {
             return;
         }
 
-        if (!(faction.open() || faction.hasInvite(sender))) {
+        if (!(faction.open() || faction.hasInvite(sender) || faction.isOnRoster(sender.uniqueId()))) {
             sender.sendRichMessage(tl.getDeniedRequiresInvite(), FactionResolver.of(faction));
             if (!faction.isBanned(sender)) {
                 faction.membersOnline(true).forEach(fp -> fp.sendRichMessage(tl.getDeniedRequiresInviteNotice(), FPlayerResolver.of("player", sender)));
@@ -107,10 +107,16 @@ public class CmdJoin implements Cmd {
 
         faction.membersOnline(true).forEach(fp -> fp.sendRichMessage(tl.getSuccessNotice(), FactionResolver.of(faction), FPlayerResolver.of("player", sender)));
 
+        // If joining via roster, use the rostered role instead of the faction's default role.
+        dev.kitteh.factions.permissible.Role joinRole = faction.rosterRoleOf(sender.uniqueId());
+        if (joinRole == null || joinRole == dev.kitteh.factions.permissible.Role.ADMIN) {
+            joinRole = faction.defaultRole();
+        }
+
         sender.resetFactionData();
         sender.faction(faction);
         faction.deInvite(sender);
-        sender.role(faction.defaultRole());
+        sender.role(joinRole);
         ((Sender.Player) context.sender()).player().updateCommands();
 
         if (FactionsPlugin.instance().conf().logging().isFactionJoin()) {

@@ -9,6 +9,7 @@ import dev.kitteh.factions.command.Cloudy;
 import dev.kitteh.factions.command.Cmd;
 import dev.kitteh.factions.command.Sender;
 import dev.kitteh.factions.event.FactionRenameEvent;
+import dev.kitteh.factions.permissible.PermissibleActions;
 import dev.kitteh.factions.permissible.Role;
 import dev.kitteh.factions.scoreboard.FTeamWrapper;
 import dev.kitteh.factions.util.MiscUtil;
@@ -46,6 +47,11 @@ public class CmdSetTag implements Cmd {
         FPlayer sender = ((Sender.Player) context.sender()).fPlayer();
         Faction faction = sender.faction();
         String tag = context.get("new tag");
+
+        if (!faction.hasAccess(sender, PermissibleActions.TAG, sender.lastStoodAt())) {
+            sender.sendRichMessage("<red>You do not have permission to change the faction tag.");
+            return;
+        }
 
         if (Factions.factions().get(tag) != null) {
             sender.msgLegacy(TL.COMMAND_TAG_TAKEN);

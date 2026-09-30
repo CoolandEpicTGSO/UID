@@ -1,0 +1,87 @@
+# ============================================================
+#   Sell Heads GUI
+# ============================================================
+title: "&8[&aSell Heads&8]"
+size: 54
+filler-material: BLACK_STAINED_GLASS_PANE
+
+# Slots for head items to be placed. Listed explicitly so you
+# can skip any slot or rearrange the grid however you like.
+# The first slot in this list that falls in the inventory is
+# used for the first head type, the second for the second, etc.
+content-slots:
+  - 9
+  - 10
+  - 11
+  - 12
+  - 13
+  - 14
+  - 15
+  - 16
+  - 18
+  - 19
+  - 20
+  - 21
+  - 22
+  - 23
+  - 24
+  - 25
+  - 27
+  - 28
+  - 29
+  - 30
+  - 31
+  - 32
+  - 33
+  - 34
+  - 36
+  - 37
+  - 38
+  - 39
+  - 40
+  - 41
+  - 42
+  - 43
+
+slots:
+  info:     4
+  sell-all: 49
+  back:     45
+
+# ----------------------------------------------------------
+#  Text customisation
+#  Placeholders noted per entry.
+# ----------------------------------------------------------
+text:
+  # Info item (stats book)
+  info-name: "&eYour Stats"
+  info-lore:
+    - "&7Level: &6{level}"
+    - "&7Sell Multiplier: &a+{multiplier}%"
+    - ""
+    - "&7Shift+Right-Click a head to"
+    - "&7sell all of that type."
+
+  # Head display item — {mob}, {count}, {value}, {currency}, {xp_status}
+  head-name: "&6{mob} Head"
+  head-lore:
+    - "&7Amount: &e{count}"
+    - "&7Total Value: &a{currency}{value}"
+    - "{xp_line}"
+    - ""
+    - "&eLeft-Click &7to sell all of this type"
+    - "&eShift+Right-Click &7to sell all of this type"
+  head-xp-yes: "&7XP: &aYes"
+  head-xp-no: "&7XP: &cNone &7(not your current level mob)"
+
+  # Sell all button
+  sell-all-name: "&aSell All Heads"
+  sell-all-lore:
+    - "&7Click to sell all eligible heads."
+    - ""
+    - "&7Estimated: &a{currency}{estimate}"
+
+  # Back button
+  back-name: "&cBack"
+  back-lore:
+    - "&7Return to main menu"

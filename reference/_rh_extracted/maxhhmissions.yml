@@ -1,0 +1,166 @@
+# ============================================================
+#   RegentHeadHunting — Max Level Missions
+#   Only players at the maximum HH level can access these.
+#   Players must manually start each mission with /hhmission start <id>
+#   Progress only counts AFTER a mission has been started.
+# ============================================================
+
+enabled: true
+
+# ---------------------------------------------------------------
+#   Mission types:
+#     MINE_ANY_BLOCK       - Mine any block
+#     MINE_ORE             - Mine any ore block
+#     MINE_SPECIFIC_BLOCK  - Mine a specific block (use 'block' field)
+#     KILL_PLAYER          - Kill other players (PvP)
+#     SELL_MOB_HEADS       - Sell any mob heads via the HH system
+#     KILL_CREEPER         - Kill creepers
+#     KILL_MOB             - Kill a specific mob (use 'mob' field in challenges)
+#     FARM_CROP            - Harvest fully-grown crops
+#
+#   prerequisites: [mission_id, ...] — all listed missions must be claimed first
+# ---------------------------------------------------------------
+
+missions:
+  mission_ml1:
+    name: "&6Block Breaker"
+    description: "&7Mine &a{target} &7blocks of any kind."
+    type: MINE_ANY_BLOCK
+    target: 50000
+    reward-money: 500000.0
+    reward-commands:
+      - "give {player} diamond_block 5"
+    icon: DIAMOND_PICKAXE
+
+  mission_ml2:
+    name: "&bOre Hunter"
+    description: "&7Mine &a{target} &7ore blocks of any type."
+    type: MINE_ORE
+    target: 10000
+    reward-money: 750000.0
+    reward-commands:
+      - "give {player} diamond_block 16"
+    icon: DIAMOND_ORE
+
+  mission_ml3:
+    name: "&cBlood Hunter"
+    description: "&7Kill &a{target} &7players."
+    type: KILL_PLAYER
+    target: 75
+    reward-money: 500000.0
+    reward-commands:
+      - "give {player} netherite_ingot 5"
+    icon: PLAYER_HEAD
+
+  mission_ml4:
+    name: "&eTreasure Seller"
+    description: "&7Sell &a75,000 &7mob heads across all tiers."
+    reward-money: 600000.0
+    reward-commands:
+      - "give {player} emerald_block 8"
+    icon: SKELETON_SKULL
+    challenges:
+      c1:
+        type: SELL_HEADS_TIER
+        head-tier: basic
+        label: "&7Basic Heads:"
+        target: 25000
+      c2:
+        type: SELL_HEADS_TIER
+        head-tier: advanced
+        label: "&7Advanced Heads:"
+        target: 25000
+      c3:
+        type: SELL_HEADS_TIER
+        head-tier: extreme
+        label: "&7Extreme Heads:"
+        target: 25000
+
+  mission_ml5:
+    name: "&2Creeper Slayer"
+    description: "&7Kill &a{target} &7creepers."
+    type: KILL_CREEPER
+    target: 15000
+    reward-money: 800000.0
+    reward-commands:
+      - "give {player} tnt 64"
+    icon: CREEPER_HEAD
+
+  mission_ml6:
+    name: "&aHarvest Master"
+    description: "&7Harvest &a{target} &7crops."
+    type: FARM_CROP
+    target: 50000
+    reward-money: 400000.0
+    reward-commands:
+      - "give {player} hay_block 64"
+    icon: WHEAT
+
+  mission_ml7:
+    name: "&dNether Walker"
+    description: "&7Kill &a1,000 &7Wither Skeletons."
+    reward-money: 650000.0
+    reward-commands:
+      - "give {player} wither_skeleton_skull 5"
+    icon: WITHER_SKELETON_SKULL
+    challenges:
+      c1:
+        type: KILL_MOB
+        mob: WITHER_SKELETON
+        label: "&7Wither Skeletons:"
+        target: 1000
+
+  mission_ml8:
+    name: "&4Head Baron"
+    description: "&7Sell &a{target} &7mob heads."
+    type: SELL_MOB_HEADS
+    target: 200000
+    reward-money: 2000000.0
+    reward-commands:
+      - "give {player} netherite_block 3"
+    icon: WITHER_SKELETON_SKULL
+
+  # Apex Hunter goes here (slot 9 = centre of bottom row)
+  mission_ml9:
+    name: "&5&lThe Apex Hunter"
+    description: "&7The ultimate challenge. Complete all\n&7other Max Hunter missions first.\n&6&lUnlocks the Max Hunter Shop!"
+    type: MINE_ANY_BLOCK
+    target: 0
+    reward-money: 10000000.0
+    reward-commands:
+      - "give {player} netherite_ingot 32"
+      - "give {player} netherite_block 5"
+      - "give {player} elytra 1"
+      - "give {player} enchanted_golden_apple 16"
+      - "crates key give {player} key3 25"
+      - "broadcast &5&l{player} &dhas completed &5&lThe Apex Hunter &dchallenge!"
+    icon: NETHER_STAR
+    prerequisites:
+      - mission_ml1
+      - mission_ml2
+      - mission_ml3
+      - mission_ml4
+      - mission_ml5
+      - mission_ml6
+      - mission_ml7
+      - mission_ml8
+      - mission_ml11
+
+  mission_ml11:
+    name: "&cUndead Hunter"
+    description: "&7Sell zombie and skeleton heads."
+    reward-money: 1000000.0
+    reward-commands:
+      - "give {player} bone_block 64"
+    icon: ZOMBIE_HEAD
+    challenges:
+      c1:
+        type: SELL_SPECIFIC_MOB_HEADS
+        mob: ZOMBIE
+        label: "&7Zombie Heads:"
+        target: 25000
+      c2:
+        type: SELL_SPECIFIC_MOB_HEADS
+        mob: SKELETON
+        label: "&7Skeleton Heads:"
+        target: 25000

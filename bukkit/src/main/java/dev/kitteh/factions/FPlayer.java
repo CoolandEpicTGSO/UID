@@ -259,4 +259,8 @@ public non-sealed interface FPlayer extends Participator, Pointered, Selectable 
     void addWarmup(WarmUpUtil.Warmup warmup, int taskId);
 
     void cancelWarmup();
+
+    long homeCooldownEnd();
+
+    void homeCooldownEnd(long epochMillis);
 }

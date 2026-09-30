@@ -1,0 +1,47 @@
+# ============================================================
+#   Perks GUI
+# ============================================================
+title: "&8[&dPerks&8]"
+size: 54
+filler-material: BLACK_STAINED_GLASS_PANE
+
+slots:
+  back: 49
+
+# Note: individual perk item slots are set per-perk in perks.yml
+
+# ----------------------------------------------------------
+#  Text customisation
+#  Placeholders: {perk} {tier} {max_tier} {bonus}
+#                {heads_sold} {heads_required} {heads_needed}
+# ----------------------------------------------------------
+text:
+  back-name: "&cBack"
+  back-lore:
+    - "&7Return to main menu"
+
+  # Maxed perk item
+  maxed-name: "&a&l{perk} - MAXED!"
+  maxed-tier-line: "&7Tier: &a{tier}/{max_tier}"
+  maxed-bonus-line: "&7Current Bonus: &a+{bonus}"
+  maxed-tag: "&a&lFully Maxed Out!"
+
+  # Normal perk item - current state lines
+  current-tier-line: "&7Current Tier: &a{tier}/{max_tier}"
+  current-bonus-line: "&7Current Bonus: &a+{bonus}"
+  locked-tier-line: "&7Current Tier: &c0/{max_tier} &7(Locked)"
+
+  # Normal perk item - next tier lines
+  next-tier-line: "&9Next Tier: &b{tier}/{max_tier}"
+  next-bonus-line: "&7Next Bonus: &b+{bonus}"
+  heads-required-line: "&7Heads Required: &b{heads_required}"
+  money-cost-line: "&7Money Required: &b{currency}{money_cost}"
+  bonus-rewards-line: "&7+ Bonus rewards on unlock"
+  can-unlock-line: "&aClick to unlock Tier {tier}!"
+  cant-unlock-line: "&cNeed &b{heads_needed} &cmore heads."
+
+  # Progress bar
+  progress-bar-prefix: "&7Progress: "
+  progress-bar-filled: "&a|"
+  progress-bar-empty: "&8|"
+  progress-bar-suffix: " &b{heads_sold}&7/&b{heads_required}"

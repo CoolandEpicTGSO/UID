@@ -1,0 +1,82 @@
+# ============================================================
+#   Spawner Fragments GUI config
+# ============================================================
+
+title: "&8[&dSpawner Fragments&8]"
+size: 27
+
+filler-material: GRAY_STAINED_GLASS_PANE
+
+# Slot positions for each mystery spawner redemption button
+slots:
+  basic: 11
+  advanced: 13
+  extreme: 15
+  close: 22
+
+# Info display item — shown in slot 4 (top-center)
+info:
+  slot: 4
+  material: BOOK
+  name: "&dSpawner Fragments"
+  lore:
+    - "&7Use your fragments to redeem"
+    - "&7mystery spawners of each tier."
+    - ""
+    - "&8You can obtain fragments as"
+    - "&8rewards from missions & events."
+
+# Labels shown on each mystery spawner button in the GUI
+# {cost} = fragments required, {have} = player's current count
+button-lore:
+  basic:
+    - "&8▸ &7Tier: &aBasic &8(HH Lvl 1-5)"
+    - ""
+    - "&7Cost: &a{cost} &7Basic Fragments"
+    - "&7You have: &a{have}"
+    - ""
+    - "&aClick to redeem!"
+  advanced:
+    - "&8▸ &7Tier: &9Advanced &8(HH Lvl 6-10)"
+    - ""
+    - "&7Cost: &9{cost} &7Advanced Fragments"
+    - "&7You have: &9{have}"
+    - ""
+    - "&9Click to redeem!"
+  extreme:
+    - "&8▸ &7Tier: &cExtreme &8(HH Lvl 11-16)"
+    - ""
+    - "&7Cost: &c{cost} &7Extreme Fragments"
+    - "&7You have: &c{have}"
+    - ""
+    - "&cClick to redeem!"
+
+# Displayed instead of the lore above when the player can't afford it
+insufficient-lore:
+  basic:
+    - "&8▸ &7Tier: &aBasic &8(HH Lvl 1-5)"
+    - ""
+    - "&7Cost: &a{cost} &7Basic Fragments"
+    - "&cYou have: &4{have} &c(need {cost})"
+    - ""
+    - "&cNot enough fragments!"
+  advanced:
+    - "&8▸ &7Tier: &9Advanced &8(HH Lvl 6-10)"
+    - ""
+    - "&7Cost: &9{cost} &7Advanced Fragments"
+    - "&cYou have: &4{have} &c(need {cost})"
+    - ""
+    - "&cNot enough fragments!"
+  extreme:
+    - "&8▸ &7Tier: &cExtreme &8(HH Lvl 11-16)"
+    - ""
+    - "&7Cost: &c{cost} &7Extreme Fragments"
+    - "&cYou have: &4{have} &c(need {cost})"
+    - ""
+    - "&cNot enough fragments!"
+
+close-button:
+  material: BARRIER
+  name: "&cClose"
+  lore:
+    - "&7Click to close this menu."

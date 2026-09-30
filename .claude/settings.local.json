@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./gradlew :paper:shadowJar)",
+      "Bash(git stash *)",
+      "Bash(jar tf *)",
+      "Bash(git checkout *)",
+      "Bash(ls \"c:/Users/TCL87/Documents/GitHub/RegentHeadHunting/src/main/java/me/tgsocodes/regentHeadHunting/\" 2>&1 | head -20)",
+      "Read(//c/Users/TCL87/Documents/GitHub/RegentHeadHunting/src/main/java/me/tgsocodes/regentHeadHunting/**)",
+      "Read(//c/Users/TCL87/Documents/GitHub/RegentHeadHunting/**)",
+      "Bash(./gradlew build *)",
+      "Bash(unzip -l \"c:/Users/TCL87/Documents/GitHub/RegentHeadHunting/build/libs/RegentHeadHunting-1.0-SNAPSHOT.jar\")",
+      "Bash(ls \"c:/Users/TCL87/Documents/GitHub/\" 2>/dev/null)",
+      "Read(//c/Users/TCL87/Documents/GitHub/**)",
+      "Read(//c/Users/TCL87/**)",
+      "Read(//c/Program Files/Java/**)",
+      "Read(//c/Program Files/**)",
+      "Bash(JAVA_HOME=\"C:/Users/TCL87/.jdks/ms-21.0.10\" ./gradlew :paper:shadowJar)",
+      "Bash(JAVA_HOME=\"C:/Users/TCL87/.jdks/ms-21.0.10\" ./gradlew build -x test)",
+      "Bash(unzip -l \"c:/Users/TCL87/IdeaProjects/HytopOutpost/build/libs/\"*.jar)",
+      "Bash(unzip -l \"c:/Users/TCL87/Documents/GitHub/UID/paper/build/libs/\"*.jar)",
+      "Bash(unzip -l \"c:/Users/TCL87/Documents/GitHub/UID/paper/build/libs/factionsuuid.jar\")",
+      "Bash(unzip -l \"c:/Users/TCL87/IdeaProjects/HytopOutpost/build/libs/HytopOutpost-1.0-SNAPSHOT.jar\")",
+      "Bash(JAVA_HOME=\"C:/Users/TCL87/.jdks/ms-21.0.10\" ./gradlew :bukkit:compileJava)",
+      "Bash(\"C:/Users/TCL87/.jdks/ms-21.0.10/bin/javac.exe\" -d /tmp /tmp/missioncount.java)",
+      "Bash(cd /tmp)",
+      "Bash(\"C:/Users/TCL87/.jdks/ms-21.0.10/bin/java.exe\" missioncount *)"
+    ]
+  }
+}

@@ -222,6 +222,18 @@ public class Econ {
             return false;
         }
 
+        // Faction bank capacity (per-faction upgrade)
+        if (to instanceof Faction toFaction && toFaction.isNormal()) {
+            double cap = FactionsPlugin.instance().configManager().factionLevelsConfig()
+                    .bankCapForTier(toFaction.customUpgradeTier(dev.kitteh.factions.command.defaults.CmdUpgrades.KEY_BANK_CAP));
+            if (getBalance(toAcc) + amount > cap) {
+                if (invoker != null && notify) {
+                    invoker.sendRichMessage("<red>That faction's bank is at its capacity (<gold>" + moneyString(cap) + "</gold>). Upgrade <white>Bank Capacity</white> via <white>/f upgrades</white>.");
+                }
+                return false;
+            }
+        }
+
         // Transfer money
 
         if (withdraw(fromAcc, amount)) {

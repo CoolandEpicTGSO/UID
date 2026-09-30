@@ -42,22 +42,31 @@ public class CmdTNTDeposit implements Cmd {
     private void handle(CommandContext<Sender> context) {
         FPlayer sender = ((Sender.Player) context.sender()).fPlayer();
         Player player = ((Sender.Player) context.sender()).player();
+        int amount = context.getOrDefault("amount", Integer.MAX_VALUE);
+        depositTnt(sender, player, amount);
+    }
+
+    /**
+     * Deposit up to {@code requestedAmount} TNT items from the player's inventory into their faction's TNT bank.
+     * Returns the actual amount deposited (0 on failure / nothing to deposit).
+     * Sends feedback messages to the player.
+     */
+    public static int depositTnt(FPlayer sender, Player player, int requestedAmount) {
         Faction faction = sender.faction();
 
         if (!faction.equals(Board.board().factionAt(new FLocation(player.getLocation())))) {
             sender.msgLegacy(TL.COMMAND_TNT_TERRITORYONLY);
-            return;
+            return 0;
         }
-        int amount = context.getOrDefault("amount", Integer.MAX_VALUE);
-        if (amount <= 0) {
-            sender.msgLegacy(TL.COMMAND_TNT_DEPOSIT_FAIL_POSITIVE, amount);
-            return;
+        if (requestedAmount <= 0) {
+            sender.msgLegacy(TL.COMMAND_TNT_DEPOSIT_FAIL_POSITIVE, requestedAmount);
+            return 0;
         }
 
         int bankMax = faction.tntBankMax();
         if (bankMax <= faction.tntBank()) {
             sender.msgLegacy(TL.COMMAND_TNT_DEPOSIT_FAIL_FULL, bankMax);
-            return;
+            return 0;
         }
 
         ItemStack tntStack = new ItemStack(Material.TNT);
@@ -67,8 +76,12 @@ public class CmdTNTDeposit implements Cmd {
                 available += i.getAmount();
             }
         }
-        amount = Math.min(amount, available);
-        amount = Math.min(amount, bankMax);
+        int room = bankMax - faction.tntBank();
+        int amount = Math.min(Math.min(requestedAmount, available), room);
+        if (amount <= 0) {
+            sender.msgLegacy(TL.COMMAND_TNT_DEPOSIT_FAIL_FULL, bankMax);
+            return 0;
+        }
 
         int current = amount;
         Map<Integer, ? extends ItemStack> all = player.getInventory().all(Material.TNT);
@@ -89,6 +102,11 @@ public class CmdTNTDeposit implements Cmd {
             }
         }
         faction.tntBank(faction.tntBank() + amount);
+        faction.recordFactionLog(dev.kitteh.factions.audit.AuditEntry.generic(
+                sender.name(), sender.uniqueId(), "tnt-deposit",
+                sender.name() + " deposited " + amount + " TNT (bank: " + faction.tntBank() + ")"
+        ));
         sender.msgLegacy(TL.COMMAND_TNT_DEPOSIT_SUCCESS, faction.tntBank());
+        return amount;
     }
 }

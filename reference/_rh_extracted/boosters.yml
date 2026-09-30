@@ -1,0 +1,163 @@
+# ============================================================
+#   RegentHeadHunting - Boosters
+#
+#   Boosters are physical items given via:
+#     /hhadmin booster give <player> <preset|random-money|random-xp>
+#
+#   Players right-click the item to activate it.
+#   Only one booster of each type can be active per player at a time.
+#   Boosters persist through server restarts.
+#
+#   MONEY booster - multiplies money earned from selling mob heads ONLY.
+#                   Does not affect the spawner shop or any other transaction.
+#
+#   XP booster    - multiplies HH XP earned from selling mob heads.
+#                   Stacks on top of the XP_BONUS perk multiplier.
+#
+#   Lore placeholders: {type} {multiplier} {duration} {currency}
+# ============================================================
+
+boosters:
+
+  notify-on-expire: true
+
+  # --------------------------------------------------------
+  #  Random booster item appearances
+  #  These items reveal their multiplier/duration on redeem,
+  #  picking randomly from presets of the matching type.
+  # --------------------------------------------------------
+  items:
+    random-money:
+      material: SUNFLOWER
+      name: "&6&l? Random Money Booster ?"
+      lore:
+        - ""
+        - "&7A mystery money booster!"
+        - "&7Right-click to reveal and activate."
+        - ""
+        - "&eType: &6MONEY"
+        - "&7Multiplier and duration unknown..."
+        - ""
+        - "&c&lRight-click to activate!"
+
+    random-xp:
+      material: NETHER_STAR
+      name: "&b&l? Random XP Booster ?"
+      lore:
+        - ""
+        - "&7A mystery XP booster!"
+        - "&7Right-click to reveal and activate."
+        - ""
+        - "&eType: &bXP"
+        - "&7Multiplier and duration unknown..."
+        - ""
+        - "&c&lRight-click to activate!"
+
+    # Preset item appearances — key must match the preset name below
+    small-money:
+      material: GOLD_NUGGET
+      name: "&6Small Money Booster"
+      lore:
+        - ""
+        - "&eType: &6MONEY"
+        - "&7Multiplier: &a{multiplier}x"
+        - "&7Duration: &e{duration} minutes"
+        - ""
+        - "&c&lRight-click to activate!"
+
+    medium-money:
+      material: GOLD_INGOT
+      name: "&6Medium Money Booster"
+      lore:
+        - ""
+        - "&eType: &6MONEY"
+        - "&7Multiplier: &a{multiplier}x"
+        - "&7Duration: &e{duration} minutes"
+        - ""
+        - "&c&lRight-click to activate!"
+
+    large-money:
+      material: GOLD_BLOCK
+      name: "&6&lLarge Money Booster"
+      lore:
+        - ""
+        - "&eType: &6MONEY"
+        - "&7Multiplier: &a{multiplier}x"
+        - "&7Duration: &e{duration} minutes"
+        - ""
+        - "&c&lRight-click to activate!"
+
+    small-xp:
+      material: EXPERIENCE_BOTTLE
+      name: "&bSmall XP Booster"
+      lore:
+        - ""
+        - "&eType: &bXP"
+        - "&7Multiplier: &a{multiplier}x"
+        - "&7Duration: &e{duration} minutes"
+        - ""
+        - "&c&lRight-click to activate!"
+
+    medium-xp:
+      material: ENCHANTED_BOOK
+      name: "&bMedium XP Booster"
+      lore:
+        - ""
+        - "&eType: &bXP"
+        - "&7Multiplier: &a{multiplier}x"
+        - "&7Duration: &e{duration} minutes"
+        - ""
+        - "&c&lRight-click to activate!"
+
+    large-xp:
+      material: BEACON
+      name: "&b&lLarge XP Booster"
+      lore:
+        - ""
+        - "&eType: &bXP"
+        - "&7Multiplier: &a{multiplier}x"
+        - "&7Duration: &e{duration} minutes"
+        - ""
+        - "&c&lRight-click to activate!"
+
+  # --------------------------------------------------------
+  #  Presets — used by /hhadmin booster give and random rolls
+  #
+  #  Add as many as you want. Each preset needs:
+  #    type:       MONEY or XP
+  #    multiplier: decimal value (e.g. 1.25, 2.5)
+  #    duration:   minutes the booster lasts
+  #
+  #  Optionally add a matching entry under items: above to
+  #  customise the item appearance. If none exists, a generic
+  #  fallback item will be used.
+  #
+  #  Random boosters pick randomly from ALL presets of the
+  #  matching type, so varied durations here produce the
+  #  "random time" effect for random booster items.
+  # --------------------------------------------------------
+  presets:
+    small-money:
+      type: MONEY
+      multiplier: 1.5
+      duration: 30
+    medium-money:
+      type: MONEY
+      multiplier: 2.0
+      duration: 60
+    large-money:
+      type: MONEY
+      multiplier: 3.0
+      duration: 120
+    small-xp:
+      type: XP
+      multiplier: 1.5
+      duration: 30
+    medium-xp:
+      type: XP
+      multiplier: 2.0
+      duration: 60
+    large-xp:
+      type: XP
+      multiplier: 3.0
+      duration: 120

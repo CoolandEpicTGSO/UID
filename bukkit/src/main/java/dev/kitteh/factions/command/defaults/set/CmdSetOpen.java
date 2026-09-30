@@ -7,6 +7,7 @@ import dev.kitteh.factions.FactionsPlugin;
 import dev.kitteh.factions.command.Cloudy;
 import dev.kitteh.factions.command.Cmd;
 import dev.kitteh.factions.command.Sender;
+import dev.kitteh.factions.permissible.PermissibleActions;
 import dev.kitteh.factions.permissible.Role;
 import dev.kitteh.factions.util.Permission;
 import dev.kitteh.factions.util.TL;
@@ -33,6 +34,17 @@ public class CmdSetOpen implements Cmd {
     private void handle(CommandContext<Sender> context) {
         FPlayer sender = ((Sender.Player) context.sender()).fPlayer();
         Faction faction = sender.faction();
+
+        if (!FactionsPlugin.instance().configManager().factionLevelsConfig().isAllowOpenFactionToggle()) {
+            sender.sendRichMessage("<red>The /f open toggle is disabled on this server. Players must be added to the roster (<white>/f roster add</white>) to join.");
+            return;
+        }
+
+        if (!faction.hasAccess(sender, PermissibleActions.STATUS, sender.lastStoodAt())) {
+            sender.sendRichMessage("<red>You do not have permission to change the faction status.");
+            return;
+        }
+
         // if economy is enabled, they're not on the bypass list, and this command has a cost set, make 'em pay
         if (!context.sender().payForCommand(FactionsPlugin.instance().conf().economy().getCostOpen(), TL.COMMAND_OPEN_TOOPEN, TL.COMMAND_OPEN_FOROPEN)) {
             return;

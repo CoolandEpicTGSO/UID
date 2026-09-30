@@ -48,6 +48,12 @@ dependencies:
     YardWatch:
       required: false
       join-classpath: true
+    HytopOutpost:
+      required: false
+      join-classpath: true
+    RegentHeadHunting:
+      required: false
+      join-classpath: true
 
 permissions:
   factions.kit.admin:
@@ -150,6 +156,16 @@ permissions:
       factions.near: true
       factions.permissions: true
       factions.upgrades: true
+      factions.level: true
+      factions.missions: true
+      factions.effects: true
+      factions.pv: true
+      factions.banner: true
+      factions.manageperms: true
+      factions.inspect: true
+      factions.logs: true
+      factions.alert: true
+      factions.warp: true
   factions.admin:
     description: hand over your admin rights
   factions.announce:
@@ -353,6 +369,24 @@ permissions:
     description: List claims of other factions
   factions.upgrades:
     description: Show faction upgrades
+  factions.level:
+    description: View faction level and XP progress
+  factions.missions:
+    description: View and track faction missions
+  factions.effects:
+    description: View and activate faction effects
+  factions.pv:
+    description: Open the faction private vault
+  factions.banner:
+    description: Deploy a faction rally banner
+  factions.manageperms:
+    description: Open and edit the faction permissions GUI
+  factions.inspect:
+    description: Use /f inspect
+  factions.logs:
+    description: View /f logs
+  factions.alert:
+    description: Send a faction-wide title alert with /f alert
   factions.force.role:
     description: Modify roles anywhere
   factions.force.join:

@@ -6,6 +6,7 @@ import dev.kitteh.factions.FactionsPlugin;
 import dev.kitteh.factions.command.Cloudy;
 import dev.kitteh.factions.command.Cmd;
 import dev.kitteh.factions.command.Sender;
+import dev.kitteh.factions.permissible.PermissibleActions;
 import dev.kitteh.factions.permissible.Role;
 import dev.kitteh.factions.util.Permission;
 import dev.kitteh.factions.util.TL;
@@ -37,6 +38,11 @@ public class CmdSetDescription implements Cmd {
     private void handle(CommandContext<Sender> context) {
         FPlayer sender = ((Sender.Player) context.sender()).fPlayer();
         Faction faction = sender.faction();
+
+        if (!faction.hasAccess(sender, PermissibleActions.DESCRIPTION, sender.lastStoodAt())) {
+            sender.sendRichMessage("<red>You do not have permission to change the faction description.");
+            return;
+        }
 
         // if economy is enabled, they're not on the bypass list, and this command has a cost set, make 'em pay
         if (!context.sender().payForCommand(FactionsPlugin.instance().conf().economy().getCostDesc(), TL.COMMAND_DESCRIPTION_TOCHANGE, TL.COMMAND_DESCRIPTION_FORCHANGE)) {

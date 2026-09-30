@@ -1,0 +1,58 @@
+# ============================================================
+#   Main Menu GUI
+# ============================================================
+title: "&8[&6HeadHunting&8]"
+size: 54
+filler-material: BLACK_STAINED_GLASS_PANE
+
+slots:
+  stats:    4
+  levels:   19
+  sell:     21
+  missions: 23
+  perks:    25
+  spawner:  31
+  close:    49
+
+# ----------------------------------------------------------
+#  Text customisation
+#  All strings support & colour codes.
+# ----------------------------------------------------------
+text:
+  # Stats skull (player head)
+  skull-name: "&e{player}"
+  skull-lore:
+    - "&7Level: &6{level}"
+    - "&7XP: &e{xp}&7/&e{next_xp}"
+    - "&7Heads Sold: &a{heads_sold}"
+    - "&7Money Earned: &a{currency}{money_earned}"
+
+  # Navigation buttons — name followed by lore lines
+  levels-name: "&6Hunter Levels"
+  levels-lore:
+    - "&7View your level progression"
+    - "&7and rank up requirements."
+
+  sell-name: "&aSell Heads"
+  sell-lore:
+    - "&7Sell your collected heads"
+    - "&7for money and XP."
+
+  missions-name: "&bMissions"
+  missions-lore:
+    - "&7View and complete daily,"
+    - "&7weekly, and elite missions."
+
+  perks-name: "&dPerks"
+  perks-lore:
+    - "&7Unlock powerful perks"
+    - "&7to boost your hunting."
+
+  spawner-name: "&cSpawner Shop"
+  spawner-lore:
+    - "&7Browse and purchase"
+    - "&7mob spawners."
+
+  close-name: "&cClose"
+  close-lore:
+    - "&7Click to close this menu."

@@ -52,6 +52,10 @@ public class CmdInvite implements Cmd {
 
         if (context.flags().hasFlag("delete")) {
             faction.deInvite(target);
+            faction.recordFactionLog(dev.kitteh.factions.audit.AuditEntry.generic(
+                    sender.name(), sender.uniqueId(), "deinvite",
+                    sender.name() + " revoked invite for " + target.name()
+            ));
             target.msgLegacy(TL.COMMAND_DEINVITE_REVOKED, sender.describeToLegacy(target), faction.describeToLegacy(target));
             faction.msgLegacy(TL.COMMAND_DEINVITE_REVOKES, sender.describeToLegacy(faction), target.describeToLegacy(faction));
             return;
@@ -67,7 +71,17 @@ public class CmdInvite implements Cmd {
             return;
         }
 
+        // Roster gate: target must be on the faction's roster to receive an invite
+        if (!faction.isOnRoster(target.uniqueId())) {
+            sender.sendRichMessage("<red>" + target.name() + " must be added to the roster first. Use <white>/f roster add " + target.name() + "</white>.");
+            return;
+        }
+
         faction.invite(target);
+        faction.recordFactionLog(dev.kitteh.factions.audit.AuditEntry.generic(
+                sender.name(), sender.uniqueId(), "invite",
+                sender.name() + " invited " + target.name()
+        ));
         if (target.isOnline()) {
             LegacyComponentSerializer legacy = LegacyComponentSerializer.legacySection();
             Component component = legacy.deserialize(sender.describeToLegacy(target))

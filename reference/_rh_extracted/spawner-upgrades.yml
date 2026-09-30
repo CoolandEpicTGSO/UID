@@ -1,0 +1,222 @@
+# ============================================================
+#   RegentHeadHunting - Spawner Upgrades
+#
+#   Speed upgrade currency: Prismarine Shards
+#   Stack upgrade currency: Prismarine Shards
+#
+#   base-delay-seconds  - Default spawner cycle time in seconds
+#   base-spawn-count    - Default mobs spawned per cycle
+#
+#   speed.effects.<tier>.delay-seconds-reduction
+#     - How many seconds off the base delay at each tier
+#   stack.effects.<tier>.spawn-count-add
+#     - How many extra mobs per cycle at each tier
+#
+#   default-costs are used for all mobs unless a mob-specific
+#   entry exists under mob-costs.<MOB_TYPE>.<tier>
+# ============================================================
+
+base-delay-seconds: 20
+base-spawn-count: 1
+# Maximum number of the same mob type allowed within 16 blocks before the spawner pauses
+max-nearby-entities: 6
+
+speed:
+  default-costs:
+    1: 16
+    2: 32
+    3: 48
+    4: 64
+    5: 80
+  effects:
+    1:
+      delay-seconds-reduction: 2
+    2:
+      delay-seconds-reduction: 4
+    3:
+      delay-seconds-reduction: 6
+    4:
+      delay-seconds-reduction: 8
+    5:
+      delay-seconds-reduction: 10
+  mob-costs:
+    CREEPER:
+      1: 96
+      2: 144
+      3: 192
+      4: 240
+      5: 288
+    COW:
+      1: 48
+      2: 64
+      3: 80
+      4: 96
+      5: 112
+    IRON_GOLEM:
+      1: 128
+      2: 192
+      3: 256
+      4: 320
+      5: 384
+    BLAZE:
+      1: 64
+      2: 96
+      3: 128
+      4: 160
+      5: 192
+    WARDEN:
+      1: 50
+      2: 100
+      3: 150
+      4: 200
+      5: 256
+
+stack:
+  default-costs:
+    1: 8
+    2: 20
+    3: 40
+    4: 80
+    5: 160
+  effects:
+    1:
+      spawn-count-add: 1
+    2:
+      spawn-count-add: 2
+    3:
+      spawn-count-add: 3
+    4:
+      spawn-count-add: 5
+    5:
+      spawn-count-add: 7
+  mob-costs:
+    CHICKEN:
+      1: 4
+      2: 8
+      3: 12
+      4: 16
+      5: 20
+    COW:
+      1: 6
+      2: 12
+      3: 24
+      4: 48
+      5: 64
+    IRON_GOLEM:
+      1: 24
+      2: 48
+      3: 72
+      4: 96
+      5: 128
+    BLAZE:
+      1: 16
+      2: 32
+      3: 56
+      4: 88
+      5: 112
+    WARDEN:
+      1: 40
+      2: 80
+      3: 120
+      4: 160
+      5: 200
+
+speed:
+  default-costs:
+    1: 16
+    2: 32
+    3: 48
+    4: 64
+    5: 80
+  effects:
+    1:
+      delay-seconds-reduction: 2
+    2:
+      delay-seconds-reduction: 4
+    3:
+      delay-seconds-reduction: 6
+    4:
+      delay-seconds-reduction: 8
+    5:
+      delay-seconds-reduction: 10
+  mob-costs:
+    CREEPER:
+      1: 96
+      2: 144
+      3: 192
+      4: 240
+      5: 288
+    COW:
+      1: 48
+      2: 64
+      3: 80
+      4: 96
+      5: 112
+    IRON_GOLEM:
+      1: 128
+      2: 192
+      3: 256
+      4: 320
+      5: 384
+    BLAZE:
+      1: 64
+      2: 96
+      3: 128
+      4: 160
+      5: 192
+    WARDEN:
+      1: 50
+      2: 100
+      3: 150
+      4: 200
+      5: 256
+
+stack:
+  default-costs:
+    1: 8
+    2: 20
+    3: 40
+    4: 80
+    5: 160
+  effects:
+    1:
+      spawn-count-add: 1
+    2:
+      spawn-count-add: 2
+    3:
+      spawn-count-add: 3
+    4:
+      spawn-count-add: 5
+    5:
+      spawn-count-add: 7
+  mob-costs:
+    CHICKEN:
+      1: 4
+      2: 8
+      3: 12
+      4: 16
+      5: 20
+    COW:
+      1: 6
+      2: 12
+      3: 24
+      4: 48
+      5: 64
+    IRON_GOLEM:
+      1: 24
+      2: 48
+      3: 72
+      4: 96
+      5: 128
+    BLAZE:
+      1: 16
+      2: 32
+      3: 56
+      4: 88
+      5: 112
+    WARDEN:
+      1: 40
+      2: 80
+      3: 120
+      4: 160
+      5: 200

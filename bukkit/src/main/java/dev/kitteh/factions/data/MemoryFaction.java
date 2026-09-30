@@ -366,9 +366,18 @@ public abstract class MemoryFaction implements Faction {
     protected double powerBoost;
     protected ConcurrentHashMap<Integer, Relation> relationWish = new ConcurrentHashMap<>();
     protected Set<UUID> invites = new HashSet<>();
+    // Legacy field — replaced by rosterRoles map. Kept for migration; cleaned in cleanupDeserialization.
+    protected Set<UUID> roster = null;
+    /** Roster: UUID → Role. Players on here can /f join without an invite and join with the assigned role. */
+    protected HashMap<UUID, Role> rosterRoles = new HashMap<>();
+    /** Trusted-owners list — a player on this list can /f owner to take leadership when the current leader is offline. */
+    protected HashSet<UUID> owners = new HashSet<>();
     protected HashMap<UUID, List<String>> announcements = new HashMap<>();
     protected ConcurrentHashMap<String, LazyLocation> warps = new ConcurrentHashMap<>();
     protected ConcurrentHashMap<String, String> warpPasswords = new ConcurrentHashMap<>();
+    // Per-warp role-name overrides for the warp GUI's right-click permissions feature.
+    // Map<warpName, Set<roleName>>; absent or empty entry means "use default WARP perm".
+    protected ConcurrentHashMap<String, HashSet<String>> warpAllowedRoles = new ConcurrentHashMap<>();
     protected long lastDeath;
     protected int maxVaults;
     protected Role defaultRole;
@@ -383,6 +392,40 @@ public abstract class MemoryFaction implements Faction {
     protected Object2IntOpenHashMap<String> upgrades = new Object2IntOpenHashMap<>();
     protected MemoryFaction.Permissions perms = new MemoryFaction.Permissions();
     protected Zones zones = new Zones(this);
+
+    // Faction Levels
+    protected long factionXp = 0L;
+    protected int factionLevel = 0;
+    protected int factionPoints = 0;
+
+    // Custom upgrade tiers (pv, warps, warp_time, hh_xp_boost, tnt_bank, banner)
+    protected HashMap<String, Integer> customUpgradeTiers = new HashMap<>();
+
+    // Faction PV contents — base64-encoded serialized ItemStacks, null entries = empty slot
+    protected String[] pvContents = new String[0];
+
+    // Faction Effects
+    protected long effectCooldownEnd = 0L;
+    // Inventory of purchased / granted effects. Key format: "EFFECT_NAME:DURATION_SECONDS", value: remaining uses.
+    protected HashMap<String, Integer> effectInventory = new HashMap<>();
+
+    // Faction booster inventory: "TYPE:MULT_X100:MINUTES" -> count
+    protected HashMap<String, Integer> boosterInventory = new HashMap<>();
+
+    // Faction Missions: missionId -> progress value
+    protected HashMap<String, Long> missionProgress = new HashMap<>();
+    // category -> last reset epoch millis
+    protected HashMap<String, Long> missionLastReset = new HashMap<>();
+    // category -> active mission ids picked from the pool for this window
+    protected HashMap<String, java.util.ArrayList<String>> missionActiveIds = new HashMap<>();
+
+    // Audit logs
+    protected java.util.ArrayList<dev.kitteh.factions.audit.AuditEntry> factionLog = new java.util.ArrayList<>();
+    protected java.util.ArrayList<dev.kitteh.factions.audit.AuditEntry> blockLog = new java.util.ArrayList<>();
+
+    // Per-member bank contribution leaderboards (lifetime totals, never decay)
+    protected HashMap<UUID, Double> bankDeposits = new HashMap<>();
+    protected HashMap<UUID, Double> bankWithdraws = new HashMap<>();
 
     protected transient long lastPlayerLoggedOffTime;
     protected transient Set<FPlayer> fplayers = new HashSet<>();
@@ -412,6 +455,28 @@ public abstract class MemoryFaction implements Faction {
             this.zones = new Zones(this);
         }
         this.zones.cleanupDeserialization(this); // Sets the transient helper main value.
+        if (this.missionProgress == null) this.missionProgress = new HashMap<>();
+        if (this.missionLastReset == null) this.missionLastReset = new HashMap<>();
+        if (this.missionActiveIds == null) this.missionActiveIds = new HashMap<>();
+        if (this.customUpgradeTiers == null) this.customUpgradeTiers = new HashMap<>();
+        if (this.factionLog == null) this.factionLog = new java.util.ArrayList<>();
+        if (this.blockLog == null) this.blockLog = new java.util.ArrayList<>();
+        if (this.bankDeposits == null) this.bankDeposits = new HashMap<>();
+        if (this.bankWithdraws == null) this.bankWithdraws = new HashMap<>();
+        if (this.warpAllowedRoles == null) this.warpAllowedRoles = new ConcurrentHashMap<>();
+        if (this.effectInventory == null) this.effectInventory = new HashMap<>();
+        if (this.boosterInventory == null) this.boosterInventory = new HashMap<>();
+        if (this.rosterRoles == null) this.rosterRoles = new HashMap<>();
+        if (this.owners == null) this.owners = new HashSet<>();
+        // Migrate legacy roster (Set of UUID) -> rosterRoles (UUID -> Role) defaulting to NORMAL
+        if (this.roster != null) {
+            for (UUID id : this.roster) {
+                if (!this.rosterRoles.containsKey(id)) {
+                    this.rosterRoles.put(id, Role.NORMAL);
+                }
+            }
+            this.roster = null;
+        }
     }
 
     @Override
@@ -455,7 +520,28 @@ public abstract class MemoryFaction implements Faction {
     @Override
     public boolean removeWarp(String name) {
         warpPasswords.remove(name); // remove password no matter what.
+        if (this.warpAllowedRoles != null) this.warpAllowedRoles.remove(name.toLowerCase());
         return warps.remove(name) != null;
+    }
+
+    @Override
+    public java.util.Set<String> warpAllowedRoles(String warpName) {
+        if (this.warpAllowedRoles == null) return java.util.Set.of();
+        HashSet<String> set = this.warpAllowedRoles.get(warpName.toLowerCase());
+        return set == null ? java.util.Set.of() : java.util.Collections.unmodifiableSet(set);
+    }
+
+    @Override
+    public void warpAllowedRoles(String warpName, java.util.Set<String> roleNames) {
+        if (this.warpAllowedRoles == null) this.warpAllowedRoles = new ConcurrentHashMap<>();
+        if (roleNames == null || roleNames.isEmpty()) {
+            this.warpAllowedRoles.remove(warpName.toLowerCase());
+        } else {
+            // store lowercase for case-insensitive comparison
+            HashSet<String> normalized = new HashSet<>();
+            for (String r : roleNames) normalized.add(r.toLowerCase());
+            this.warpAllowedRoles.put(warpName.toLowerCase(), normalized);
+        }
     }
 
     @Override
@@ -496,6 +582,71 @@ public abstract class MemoryFaction implements Faction {
     @Override
     public Set<UUID> invites() {
         return invites;
+    }
+
+    @Override
+    public java.util.Map<UUID, Role> rosterRoles() {
+        if (this.rosterRoles == null) this.rosterRoles = new HashMap<>();
+        return java.util.Collections.unmodifiableMap(this.rosterRoles);
+    }
+
+    @Override
+    public boolean rosterAdd(UUID playerId, Role role) {
+        if (this.rosterRoles == null) this.rosterRoles = new HashMap<>();
+        if (role == null || role == Role.ADMIN) return false; // Leader cannot be pre-rostered
+        int max = FactionsPlugin.instance().configManager().factionLevelsConfig().getRosterMaxSize();
+        if (this.rosterRoles.size() >= max && !this.rosterRoles.containsKey(playerId)) return false;
+        this.rosterRoles.put(playerId, role);
+        return true;
+    }
+
+    @Override
+    public boolean rosterSetRole(UUID playerId, Role role) {
+        if (this.rosterRoles == null) return false;
+        if (role == null || role == Role.ADMIN) return false;
+        if (!this.rosterRoles.containsKey(playerId)) return false;
+        this.rosterRoles.put(playerId, role);
+        return true;
+    }
+
+    @Override
+    public Role rosterRoleOf(UUID playerId) {
+        if (this.rosterRoles == null) return null;
+        return this.rosterRoles.get(playerId);
+    }
+
+    @Override
+    public boolean rosterRemove(UUID playerId) {
+        if (this.rosterRoles == null) return false;
+        return this.rosterRoles.remove(playerId) != null;
+    }
+
+    @Override
+    public boolean isOnRoster(UUID playerId) {
+        return this.rosterRoles != null && this.rosterRoles.containsKey(playerId);
+    }
+
+    @Override
+    public Set<UUID> owners() {
+        if (this.owners == null) this.owners = new HashSet<>();
+        return java.util.Collections.unmodifiableSet(this.owners);
+    }
+
+    @Override
+    public boolean ownersAdd(UUID playerId) {
+        if (this.owners == null) this.owners = new HashSet<>();
+        return this.owners.add(playerId);
+    }
+
+    @Override
+    public boolean ownersRemove(UUID playerId) {
+        if (this.owners == null) return false;
+        return this.owners.remove(playerId);
+    }
+
+    @Override
+    public boolean isOwner(UUID playerId) {
+        return this.owners != null && this.owners.contains(playerId);
     }
 
     @Override
@@ -943,8 +1094,14 @@ public abstract class MemoryFaction implements Faction {
 
     @Override
     public int tntBankMax() {
+        var cfg = FactionsPlugin.instance().configManager().factionLevelsConfig();
+        // CmdUpgrades.KEY_TNT_BANK — string is duplicated to avoid a command-package dependency
+        int tier = this.customUpgradeTier("tnt_bank");
+        int upgradeMax = cfg.tntBankCapacityForTier(tier);
+
         int configMax = FactionsPlugin.instance().conf().commands().tnt().getMaxStorage();
-        return configMax >= 0 ? configMax : Integer.MAX_VALUE;
+        if (configMax < 0) return upgradeMax;
+        return Math.min(configMax, upgradeMax);
     }
 
     @Override
@@ -1191,6 +1348,286 @@ public abstract class MemoryFaction implements Faction {
         for (FPlayer fplayer : this.membersOnline(true)) {
             fplayer.sendMessageLegacy(message);
         }
+    }
+
+    // ── Faction Levels ──────────────────────────────────────────────────────
+
+    @Override
+    public long factionXp() {
+        return this.factionXp;
+    }
+
+    @Override
+    public void factionXp(long xp) {
+        this.factionXp = xp;
+    }
+
+    @Override
+    public int factionLevel() {
+        return this.factionLevel;
+    }
+
+    @Override
+    public void factionLevel(int level) {
+        this.factionLevel = level;
+    }
+
+    @Override
+    public int factionPoints() {
+        return this.factionPoints;
+    }
+
+    @Override
+    public void factionPoints(int points) {
+        this.factionPoints = Math.max(0, points);
+    }
+
+    @Override
+    public void addFactionPoints(int amount) {
+        this.factionPoints += amount;
+    }
+
+    @Override
+    public boolean spendFactionPoints(int amount) {
+        if (this.factionPoints < amount) return false;
+        this.factionPoints -= amount;
+        return true;
+    }
+
+    // ── Custom Upgrade Tiers ────────────────────────────────────────────────
+
+    @Override
+    public int customUpgradeTier(String upgradeKey) {
+        if (this.customUpgradeTiers == null) return 0;
+        return this.customUpgradeTiers.getOrDefault(upgradeKey, 0);
+    }
+
+    @Override
+    public void customUpgradeTier(String upgradeKey, int tier) {
+        if (this.customUpgradeTiers == null) this.customUpgradeTiers = new HashMap<>();
+        this.customUpgradeTiers.put(upgradeKey, tier);
+    }
+
+    // ── Faction PV ─────────────────────────────────────────────────────────
+
+    @Override
+    public String[] pvContents() {
+        if (this.pvContents == null) return new String[0];
+        return this.pvContents;
+    }
+
+    @Override
+    public void pvContents(String[] contents) {
+        this.pvContents = contents;
+    }
+
+    // ── Faction Effects ─────────────────────────────────────────────────────
+
+    @Override
+    public long effectCooldownEnd() {
+        return this.effectCooldownEnd;
+    }
+
+    @Override
+    public void effectCooldownEnd(long epochMillis) {
+        this.effectCooldownEnd = epochMillis;
+    }
+
+    @Override
+    public java.util.Map<String, Integer> effectInventory() {
+        if (this.effectInventory == null) return java.util.Map.of();
+        return java.util.Collections.unmodifiableMap(this.effectInventory);
+    }
+
+    @Override
+    public void addEffectToInventory(String effectName, int durationSeconds, int count) {
+        if (count <= 0) return;
+        if (this.effectInventory == null) this.effectInventory = new HashMap<>();
+        String key = effectName.toUpperCase() + ":" + durationSeconds;
+        this.effectInventory.merge(key, count, Integer::sum);
+    }
+
+    @Override
+    public boolean consumeEffectFromInventory(String effectName, int durationSeconds) {
+        if (this.effectInventory == null) return false;
+        String key = effectName.toUpperCase() + ":" + durationSeconds;
+        Integer remaining = this.effectInventory.get(key);
+        if (remaining == null || remaining <= 0) return false;
+        if (remaining == 1) {
+            this.effectInventory.remove(key);
+        } else {
+            this.effectInventory.put(key, remaining - 1);
+        }
+        return true;
+    }
+
+    @Override
+    public java.util.Map<String, Integer> boosterInventory() {
+        if (this.boosterInventory == null) return java.util.Map.of();
+        return java.util.Collections.unmodifiableMap(this.boosterInventory);
+    }
+
+    @Override
+    public void addBoosterToInventory(String boosterType, int multiplierX100, int minutes, int count) {
+        if (count <= 0) return;
+        if (this.boosterInventory == null) this.boosterInventory = new HashMap<>();
+        String key = boosterType.toUpperCase() + ":" + multiplierX100 + ":" + minutes;
+        this.boosterInventory.merge(key, count, Integer::sum);
+    }
+
+    @Override
+    public boolean consumeBoosterFromInventory(String boosterType, int multiplierX100, int minutes) {
+        if (this.boosterInventory == null) return false;
+        String key = boosterType.toUpperCase() + ":" + multiplierX100 + ":" + minutes;
+        Integer remaining = this.boosterInventory.get(key);
+        if (remaining == null || remaining <= 0) return false;
+        if (remaining == 1) {
+            this.boosterInventory.remove(key);
+        } else {
+            this.boosterInventory.put(key, remaining - 1);
+        }
+        return true;
+    }
+
+    // ── Faction Missions ────────────────────────────────────────────────────
+
+    @Override
+    public long missionProgress(String missionId) {
+        if (this.missionProgress == null) return 0L;
+        return this.missionProgress.getOrDefault(missionId, 0L);
+    }
+
+    @Override
+    public void missionProgress(String missionId, long value) {
+        if (this.missionProgress == null) this.missionProgress = new HashMap<>();
+        this.missionProgress.put(missionId, value);
+    }
+
+    @Override
+    public long missionLastReset(String category) {
+        if (this.missionLastReset == null) return 0L;
+        return this.missionLastReset.getOrDefault(category, 0L);
+    }
+
+    @Override
+    public void missionLastReset(String category, long epochMillis) {
+        if (this.missionLastReset == null) this.missionLastReset = new HashMap<>();
+        this.missionLastReset.put(category, epochMillis);
+    }
+
+    @Override
+    public java.util.List<String> missionActiveIds(String category) {
+        if (this.missionActiveIds == null) return java.util.Collections.emptyList();
+        java.util.ArrayList<String> ids = this.missionActiveIds.get(category);
+        return ids == null ? java.util.Collections.emptyList() : new java.util.ArrayList<>(ids);
+    }
+
+    @Override
+    public void missionActiveIds(String category, java.util.List<String> ids) {
+        if (this.missionActiveIds == null) this.missionActiveIds = new HashMap<>();
+        this.missionActiveIds.put(category, new java.util.ArrayList<>(ids));
+    }
+
+    @Override
+    public void recordFactionLog(dev.kitteh.factions.audit.AuditEntry entry) {
+        if (this.factionLog == null) this.factionLog = new java.util.ArrayList<>();
+        this.factionLog.add(entry);
+        int days = FactionsPlugin.instance().configManager().factionLevelsConfig().getFactionLogRetentionDays();
+        if (days > 0) {
+            evictOlderThan(this.factionLog, System.currentTimeMillis() - (long) days * 86_400_000L);
+        }
+        while (this.factionLog.size() > 5000) {
+            this.factionLog.remove(0);
+        }
+    }
+
+    @Override
+    public java.util.List<dev.kitteh.factions.audit.AuditEntry> factionLog() {
+        if (this.factionLog == null) return java.util.List.of();
+        return java.util.Collections.unmodifiableList(this.factionLog);
+    }
+
+    @Override
+    public void clearFactionLog() {
+        if (this.factionLog != null) this.factionLog.clear();
+    }
+
+    @Override
+    public void recordBlockLog(dev.kitteh.factions.audit.AuditEntry entry) {
+        if (this.blockLog == null) this.blockLog = new java.util.ArrayList<>();
+        this.blockLog.add(entry);
+        int hours = FactionsPlugin.instance().configManager().factionLevelsConfig().getBlockLogRetentionHours();
+        if (hours > 0) {
+            evictOlderThan(this.blockLog, System.currentTimeMillis() - (long) hours * 3_600_000L);
+        }
+        while (this.blockLog.size() > 20000) {
+            this.blockLog.remove(0);
+        }
+    }
+
+    /**
+     * Drops entries older than {@code cutoffMillis} from the front of the list.
+     * Assumes the list is roughly chronologically ordered (which it is — entries are
+     * appended with {@code System.currentTimeMillis()}). Cheap because we stop at the
+     * first surviving entry rather than scanning the whole list.
+     */
+    private static void evictOlderThan(java.util.ArrayList<dev.kitteh.factions.audit.AuditEntry> log, long cutoffMillis) {
+        int firstSurvivor = 0;
+        while (firstSurvivor < log.size() && log.get(firstSurvivor).timestamp < cutoffMillis) {
+            firstSurvivor++;
+        }
+        if (firstSurvivor > 0) {
+            log.subList(0, firstSurvivor).clear();
+        }
+    }
+
+    @Override
+    public void addBankDeposit(UUID member, double amount) {
+        if (this.bankDeposits == null) this.bankDeposits = new HashMap<>();
+        this.bankDeposits.merge(member, amount, Double::sum);
+    }
+
+    @Override
+    public void addBankWithdraw(UUID member, double amount) {
+        if (this.bankWithdraws == null) this.bankWithdraws = new HashMap<>();
+        this.bankWithdraws.merge(member, amount, Double::sum);
+    }
+
+    @Override
+    public double bankDepositOf(UUID member) {
+        if (this.bankDeposits == null) return 0;
+        return this.bankDeposits.getOrDefault(member, 0.0);
+    }
+
+    @Override
+    public double bankWithdrawOf(UUID member) {
+        if (this.bankWithdraws == null) return 0;
+        return this.bankWithdraws.getOrDefault(member, 0.0);
+    }
+
+    @Override
+    public java.util.Map<UUID, Double> bankDepositLeaderboard() {
+        if (this.bankDeposits == null) return java.util.Map.of();
+        return java.util.Collections.unmodifiableMap(this.bankDeposits);
+    }
+
+    @Override
+    public java.util.Map<UUID, Double> bankWithdrawLeaderboard() {
+        if (this.bankWithdraws == null) return java.util.Map.of();
+        return java.util.Collections.unmodifiableMap(this.bankWithdraws);
+    }
+
+    @Override
+    public java.util.List<dev.kitteh.factions.audit.AuditEntry> blockLogAt(String world, int x, int y, int z) {
+        if (this.blockLog == null) return java.util.List.of();
+        java.util.ArrayList<dev.kitteh.factions.audit.AuditEntry> hits = new java.util.ArrayList<>();
+        for (int i = this.blockLog.size() - 1; i >= 0; i--) {
+            dev.kitteh.factions.audit.AuditEntry e = this.blockLog.get(i);
+            if (e.x == x && e.y == y && e.z == z && world.equals(e.world)) {
+                hits.add(e);
+            }
+        }
+        return hits;
     }
 
     public void remove() {

@@ -72,6 +72,11 @@ public final class FactionResolver extends ObservedResolver {
 
             case "name", "tag" -> tag(faction.tag());
 
+            // Faction tag with any surrounding [ ] stripped — system factions
+            // (Wilderness / SafeZone / WarZone) store their tag with brackets baked in,
+            // which doubles up when a template adds its own brackets.
+            case "name_clean", "tag_clean" -> tag(stripBrackets(faction.tag()));
+
             case "description" -> tag(faction.description());
 
             case "link" -> tag(Component.text().content(faction.link()).clickEvent(ClickEvent.openUrl(faction.link())));
@@ -190,6 +195,22 @@ public final class FactionResolver extends ObservedResolver {
             case "if_leader" -> tagToggle(faction.admin() != null,  arguments);
             case "if_has_home" -> tagToggle(faction.hasHome(), arguments);
 
+            case "level" -> tag(faction.factionLevel());
+            case "xp" -> tag(faction.factionXp());
+            case "faction_points" -> tag(faction.factionPoints());
+            case "xp_progress" -> {
+                dev.kitteh.factions.level.FactionLevelsConfig cfg =
+                    FactionsPlugin.instance().configManager().factionLevelsConfig();
+                int lvl = faction.factionLevel();
+                long xp = faction.factionXp();
+                if (lvl >= cfg.maxLevel()) {
+                    long cap = cfg.xpRequired(cfg.maxLevel());
+                    yield tag("MAX (" + cap + "/" + cap + ")");
+                } else {
+                    yield tag(xp + "/" + cfg.xpRequired(lvl + 1));
+                }
+            }
+
             default -> tag(Component.empty());
         };
     }
@@ -199,5 +220,19 @@ public final class FactionResolver extends ObservedResolver {
             return String.valueOf(relation.getMax());
         }
         return TL.GENERIC_INFINITY.toString();
+    }
+
+    /**
+     * Strip a single matching pair of surrounding square brackets from a faction tag.
+     * System factions (Wilderness / SafeZone / WarZone) store their tag pre-wrapped in
+     * {@code [ ]}; this lets templates add their own brackets without doubling up.
+     */
+    private static String stripBrackets(String tag) {
+        if (tag == null) return "";
+        String t = tag.trim();
+        if (t.length() >= 2 && t.charAt(0) == '[' && t.charAt(t.length() - 1) == ']') {
+            return t.substring(1, t.length() - 1);
+        }
+        return tag;
     }
 }

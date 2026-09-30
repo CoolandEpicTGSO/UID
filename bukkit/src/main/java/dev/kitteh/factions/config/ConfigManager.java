@@ -5,6 +5,8 @@ import dev.kitteh.factions.config.file.MainConfig;
 import dev.kitteh.factions.config.file.PermissionsConfig;
 import dev.kitteh.factions.config.file.TranslationsConfig;
 import dev.kitteh.factions.config.transition.Transitioner;
+import dev.kitteh.factions.level.FactionLevelsConfig;
+import dev.kitteh.factions.mission.MissionsConfig;
 import dev.kitteh.factions.plugin.AbstractFactionsPlugin;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NullMarked;
@@ -21,6 +23,8 @@ public class ConfigManager {
     private final MainConfig mainConfig = new MainConfig();
     private final DynmapConfig dynmapConfig = new DynmapConfig();
     private final TranslationsConfig translationsConfig = new TranslationsConfig();
+    private final FactionLevelsConfig factionLevelsConfig = new FactionLevelsConfig();
+    private final MissionsConfig missionsConfig = new MissionsConfig();
 
     public ConfigManager(AbstractFactionsPlugin plugin) {
         this.plugin = plugin;
@@ -36,6 +40,8 @@ public class ConfigManager {
         }
         this.loadConfig("permissions", this.permissionsConfig);
         this.loadConfig("dynmap", this.dynmapConfig);
+        this.loadConfig("factionlevels", this.factionLevelsConfig);
+        this.loadConfig("missions", this.missionsConfig);
     }
 
     private void loadConfig(String name, Object config) {
@@ -60,5 +66,13 @@ public class ConfigManager {
 
     public TranslationsConfig translationsConfig() {
         return this.translationsConfig;
+    }
+
+    public FactionLevelsConfig factionLevelsConfig() {
+        return this.factionLevelsConfig;
+    }
+
+    public MissionsConfig missionsConfig() {
+        return this.missionsConfig;
     }
 }

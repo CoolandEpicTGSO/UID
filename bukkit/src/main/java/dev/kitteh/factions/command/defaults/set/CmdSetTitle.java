@@ -7,6 +7,7 @@ import dev.kitteh.factions.command.Cloudy;
 import dev.kitteh.factions.command.Cmd;
 import dev.kitteh.factions.command.FPlayerParser;
 import dev.kitteh.factions.command.Sender;
+import dev.kitteh.factions.permissible.PermissibleActions;
 import dev.kitteh.factions.permissible.Role;
 import dev.kitteh.factions.tagresolver.FPlayerResolver;
 import dev.kitteh.factions.util.Mini;
@@ -47,6 +48,11 @@ public class CmdSetTitle implements Cmd {
         Faction faction = sender.faction();
 
         var tl = FactionsPlugin.instance().tl().commands().set().title();
+
+        if (!faction.hasAccess(sender, PermissibleActions.TITLE, sender.lastStoodAt())) {
+            sender.sendRichMessage("<red>You do not have permission to set member titles.");
+            return;
+        }
 
         if (sender.faction() != target.faction() || (sender.role() != Role.ADMIN && sender.role().value <= target.role().value)) {
             sender.sendRichMessage(tl.getCannotChange());

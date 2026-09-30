@@ -6,6 +6,7 @@ import dev.kitteh.factions.util.Permission;
 import dev.kitteh.factions.util.TL;
 import org.bukkit.ChatColor;
 import org.incendo.cloud.description.Description;
+import org.incendo.cloud.key.CloudKey;
 import org.incendo.cloud.permission.PredicatePermission;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NullMarked;
@@ -34,8 +35,15 @@ public final class Cloudy {
         return PredicatePermission.of(Sender::isPlayer);
     }
 
+    /**
+     * Permission key used by {@link #hasFaction()}. Identified by name so the command
+     * exception handler can recognise a "needs a faction" failure and show a friendly
+     * "create a faction" prompt instead of the generic permission-denied message.
+     */
+    public static final CloudKey<Void> HAS_FACTION_KEY = CloudKey.of("factions:has_faction");
+
     public static PredicatePermission<Sender> hasFaction() {
-        return PredicatePermission.of(Sender::hasFaction);
+        return PredicatePermission.of(HAS_FACTION_KEY, Sender::hasFaction);
     }
 
     public static PredicatePermission<Sender> isBypass() {

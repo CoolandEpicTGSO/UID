@@ -1,0 +1,54 @@
+# ============================================================
+#   Max HH Shop — /mhhshop
+#   Only accessible to players at the maximum HH level.
+#   Add as many items as you like under 'items:'.
+#   Each entry needs: material, price-per-item, name, lore.
+# ============================================================
+
+# The max-level mission ID that must be claimed to unlock the MHH Shop.
+# The shop (and perma multiplier) are granted when this mission is claimed.
+unlock-mission: "mission_ml9"
+
+# Permanent head-sell multiplier granted to every player who
+# has unlocked the MHH Shop.
+# Set to 1.0 to disable. 1.1 = +10% to all HH head sales.
+perma-sell-multiplier: 1.1
+
+# How many items a player can sell per click (LEFT = 1 stack, SHIFT = all)
+# Each click sells one stack (up to 64) of the material.
+
+items:
+  iron:
+    material: IRON_INGOT
+    price-per-item: 21.0
+    name: "&7Iron Ingot"
+    lore:
+      - "&7Sell your iron for cash."
+      - "&7Price: &a${price} &7per ingot"
+
+  melon:
+    material: MELON_SLICE
+    price-per-item: 0.45
+    name: "&aMelon Slice"
+    lore:
+      - "&7Fresh from the farm."
+      - "&7Price: &a${price} &7per slice"
+
+  mutton:
+    material: MUTTON
+    price-per-item: 10.0
+    name: "&eMutton"
+    lore:
+      - "&7Freshly butchered."
+      - "&7Price: &a${price} &7per mutton"
+
+  # Add more items below — copy the block above and change the key,
+  # material, price-per-item, name, and lore.
+  # Example:
+  # gold:
+  #   material: GOLD_INGOT
+  #   price-per-item: 35.0
+  #   name: "&6Gold Ingot"
+  #   lore:
+  #     - "&7Shiny!"
+  #     - "&7Price: &a${price} &7per ingot"

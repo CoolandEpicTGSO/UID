@@ -1,0 +1,101 @@
+# ============================================================
+#   RegentHeadHunting - General Configuration
+#   Plugin by TGSoCodes
+#
+#   Config files:
+#     config.yml    - General settings, storage, messages
+#     levels.yml    - Level progression
+#     mobs.yml      - Mob head prices, drop chances, textures
+#     spawners.yml  - Spawner shop and upgrade tiers
+#     spawner-shop.yml - Spawner shop prices
+#     boosters.yml  - Money and XP boosters
+#     perks.yml     - Passive perks
+#     missions.yml  - Daily, weekly and elite missions
+#     gui.yml       - GUI layout and display
+# ============================================================
+
+general:
+  prefix: "&8[&bHH&8] &r"
+  debug: false
+  currency-symbol: "$"
+  auto-save-interval: 300
+  spawn-conditions: true
+  announce-drop: false
+  announce-message: "&9[HeadHunting] &b{player} &7collected a &9{mob} Head&7!"
+  item-name: "{color}{mob} Head"
+  item-lore:
+    - "&7A trophy head from a {color}{mob}&7."
+    - ""
+    - "&7Sell Price: &a{currency}{value}"
+    - "&7Level: {color}{level}"
+    - ""
+    - "{color}(( Right-Click to Sell ))"
+
+storage:
+  type: yaml
+  mysql:
+    host: localhost
+    port: 3306
+    database: headhunting
+    username: root
+    password: password
+    pool-size: 10
+
+messages:
+  no-permission: "&cYou don't have permission to do that."
+  player-only: "&cThis command can only be used by players."
+  not-enough-money: "&cYou don't have enough money! You need &b{currency}{amount}&c."
+  not-enough-xp: "&cYou don't have enough XP to level up yet."
+  not-enough-heads-sold: "&cYou haven't sold enough heads to rank up yet!"
+  not-enough-level: "&cYou need to be level &b{level} &cto do that!"
+  already-max-level: "&bYou are already at the maximum level!"
+  rank-up-success: "&9You have ranked up to &b{level}&9!"
+  rank-up-notify: "&8» &bYou're ready to rank up to &9{level}&b! &7Use &b/hh &7to open the menu."
+  rank-up-broadcast-5: "&8[&bHH&8] &b{player} &7has reached &9Level 5 &7in Head Hunting!"
+  rank-up-broadcast-10: "&8[&bHH&8] &b{player} &7has reached &9Level 10 &7in Head Hunting!"
+  rank-up-broadcast-max: "&8[&9&lHH&8] &9&l{player} &7has reached &9&lMAX LEVEL &7in Head Hunting! &9Insane."
+  rank-up-fail-heads: "&cYou need to sell &b{required} &c{mob} heads first!"
+  head-sold: "&aYou sold &b{amount} &a{mob} heads for &9{currency}{value}&a!"
+  no-heads-to-sell: "&cYou don't have any eligible heads to sell."
+  spawner-purchased: "&aYou purchased a &b{mob} Spawner &afor &9{currency}{price}&a!"
+  spawner-not-enough-level: "&cYou need to be HeadHunting level &b{level} &cto place this spawner!"
+  spawner-upgraded: "&aSpawner upgraded to level &b{level}&a!"
+  spawner-upgrade-max: "&cThis spawner is already at max upgrade level!"
+  spawner-upgrade-no-materials: "&cYou need &b{amount} &cto upgrade this spawner!"
+  spawner-silk-required: "&cYou need Silk Touch to mine this spawner!"
+  mission-complete: "&a&lMISSION COMPLETE! &b{mission} &a- Head to the &9Missions tab &ato claim your rewards!"
+  mission-claimed: "&a&lREWARDS CLAIMED! &b{mission} &a| &bHH XP: &b{xp} &a| &aMoney: &9{currency}{reward}"
+  mission-not-complete-header: "&c&l{mission} &c— Not complete yet:"
+  mission-not-complete-challenge: "&8› &7{label} &c{progress}&7/&c{target} &8(&c{needed} &8left)"
+  mission-not-complete-single: "&c{mission} &c— Need &b{needed} &cmore {type_label}&c. &8({progress}&7/&8{target}&8)"
+  mission-already-claimed: "&7{mission} &7is already completed. Resets in &b{reset}&7."
+  perk-unlocked: "&dPerk &b{perk} &dTier &b{tier} &dunlocked!"
+  perk-not-enough-heads: "&cYou need &b{required} &cheads sold to unlock this perk!"
+  perk-not-enough-money: "&cYou need &b{currency}{required} &cto unlock this perk tier!"
+  perk-need-money: "&cYou have enough heads but need &b{currency}{required} &cmore to unlock &d{perk} &cTier &b{tier}&c!"
+  booster-activated: "&a{type} Booster active for &b{duration} &aminutes! Multiplier: &9{multiplier}x"
+  booster-expired: "&7Your &b{type} &7booster has expired."
+  booster-already-active: "&cYou already have an active &b{type} &cbooster!"
+  booster-paused: "&eYour &6{type} &ebooster has been paused. Time remaining: &a{time}&e."
+  booster-resumed: "&aYour &6{type} &abooster has been resumed!"
+  data-saved: "&aYour data has been saved."
+  reload-success: "&aRegentHeadHunting has been reloaded."
+  # Max-level missions
+  max-missions-locked: "&cMax Level Missions are only available to players at HeadHunting level &b{level}&c!"
+  max-mission-started: "&aYou started the mission: &b{mission}&a! Progress will now be tracked."
+  max-mission-already-started: "&cYou have already started &b{mission}&c!"
+  max-mission-not-found: "&cMission &b{id} &cdoes not exist."
+  max-mission-usage: "&cUsage: &b/hhmission start <id>"
+  max-mission-prerequisites-not-met: "&cYou must complete &b{required} &cbefore you can start &b{mission}&c!"
+  # MHH Shop
+  mhh-shop-locked: "&cThe Max Hunter Shop is only available to players at HeadHunting level &b{level}&c!"
+  mhh-shop-not-unlocked: "&cYou haven't unlocked the Max Hunter Shop yet! Complete the &bGrand Destroyer &cmission to gain access."
+  mhh-shop-unlocked: "&9&lMAX HUNTER SHOP UNLOCKED! &bYou now have permanent access and a &a1.1x &bhead sell bonus!"
+  mhh-shop-sold: "&aYou sold &b{amount}x {item} &afor &9{currency}{value}&a!"
+  mhh-shop-no-items: "&cYou don't have any &b{item} &cto sell."
+  # Spawner Fragments
+  fragment-insufficient: "&cYou need &b{cost} {tier} &cFragments but only have &b{have}&c."
+  fragment-redeemed: "&aYou redeemed your fragments for a &b{tier} Mystery Spawner&a!"
+  mystery-spawner-revealed: "&aYour &b{tier} Mystery Spawner &arevealed a &9{mob} Spawner&a!"
+  mystery-spawner-empty-pool: "&cNo valid mobs are configured for that spawner tier."
+

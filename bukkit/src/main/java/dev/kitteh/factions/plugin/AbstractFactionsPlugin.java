@@ -13,6 +13,7 @@ import dev.kitteh.factions.chat.ChatTarget;
 import dev.kitteh.factions.command.Cmd;
 import dev.kitteh.factions.command.CommandsRoot;
 import dev.kitteh.factions.command.Sender;
+import dev.kitteh.factions.command.defaults.CmdPv;
 import dev.kitteh.factions.config.ConfigManager;
 import dev.kitteh.factions.data.MemoryFPlayer;
 import dev.kitteh.factions.data.MemoryFaction;
@@ -380,6 +381,7 @@ public abstract class AbstractFactionsPlugin extends JavaPlugin implements Facti
         int loadedClaims = Instances.BOARD.load();
         Instances.BOARD.clean();
         Instances.UNIVERSE.load();
+        dev.kitteh.factions.audit.ChestLogs.load();
         AbstractFactionsPlugin.instance().getLogger().info("Loaded " + loadedPlayers + " players in " + loadedFactions + " factions with " + loadedClaims + " claims");
 
         ContextManager.init(this);
@@ -417,12 +419,40 @@ public abstract class AbstractFactionsPlugin extends JavaPlugin implements Facti
         this.getServer().getPluginManager().registerEvents(new ListenScoreboard(), this);
         this.getServer().getPluginManager().registerEvents(new ListenSpawn(), this);
         this.getServer().getPluginManager().registerEvents(new ListenUpgrade(), this);
+        this.getServer().getPluginManager().registerEvents(new dev.kitteh.factions.listener.ListenAuditBlocks(), this);
+        this.getServer().getPluginManager().registerEvents(new dev.kitteh.factions.listener.ListenSpawnerLog(), this);
+        this.getServer().getPluginManager().registerEvents(new dev.kitteh.factions.listener.ListenAuditFaction(), this);
+        this.getServer().getPluginManager().registerEvents(new dev.kitteh.factions.listener.ListenCropGrowth(), this);
+        this.getServer().getPluginManager().registerEvents(new dev.kitteh.factions.listener.ListenMissions(), this);
+        dev.kitteh.factions.listener.ListenMissions.startPlaytimeTicker(this);
+        dev.kitteh.factions.listener.ListenHHXpBoost.registerIfAvailable(this);
+        dev.kitteh.factions.listener.ListenHHHeadSell.registerIfAvailable(this);
+        dev.kitteh.factions.listener.ListenHHSpawner.registerIfAvailable(this);
+        dev.kitteh.factions.listener.ListenOutpostCapture.registerIfAvailable(this);
+        dev.kitteh.factions.listener.ListenOutpostHold.registerIfAvailable(this);
         this.getServer().getPluginManager().registerEvents(this.integrationManager, this);
         this.registerServerSpecificEvents();
 
         if (conf().commands().fly().isEnable()) {
             FlightUtil.start();
         }
+
+        // Hourly sweep: wipe faction logs for factions with no activity for N days (configurable, 0 disables).
+        // Runs sync because clearFactionLog mutates faction state.
+        Bukkit.getScheduler().runTaskTimer(this, () -> {
+            int dormantDays = configManager().factionLevelsConfig().getFactionLogDormantWipeDays();
+            if (dormantDays <= 0) return;
+            long cutoff = System.currentTimeMillis() - (long) dormantDays * 86_400_000L;
+            for (dev.kitteh.factions.Faction faction : dev.kitteh.factions.Factions.factions().all()) {
+                if (!faction.isNormal()) continue;
+                java.util.List<dev.kitteh.factions.audit.AuditEntry> log = faction.factionLog();
+                if (log.isEmpty()) continue;
+                // Newest entry is at the end of the list
+                if (log.get(log.size() - 1).timestamp < cutoff) {
+                    faction.clearFactionLog();
+                }
+            }
+        }, 20L * 60 * 5 /* first run after 5 min */, 20L * 60 * 60 /* every hour */);
 
         closeRegistries(
                 CommandsRoot.class, // Registers the commands
@@ -859,6 +889,8 @@ public abstract class AbstractFactionsPlugin extends JavaPlugin implements Facti
         }
         // only save data if plugin actually loaded successfully
         if (loadSuccessful) {
+            // Must precede the faction save: writes open vaults back into faction state.
+            CmdPv.shutdown();
             Instances.FACTIONS.forceSave(true);
             Instances.PLAYERS.forceSave(true);
             Instances.BOARD.forceSave(true);

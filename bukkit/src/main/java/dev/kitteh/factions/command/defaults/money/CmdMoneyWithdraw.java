@@ -25,8 +25,10 @@ import org.incendo.cloud.minecraft.extras.MinecraftHelp;
 public class CmdMoneyWithdraw implements Cmd {
     @Override
     public TriConsumer<CommandManager<Sender>, Command.Builder<Sender>, MinecraftHelp<Sender>> consumer() {
+        // Hidden from /f help — the top-level /f withdraw shortcut (CmdWithdraw) is the listed command.
         return (manager, builder, help) -> manager.command(
                 builder.literal("withdraw")
+                        .meta(HIDE_IN_HELP, true)
                         .permission(builder.commandPermission().and(Cloudy.hasPermission(Permission.MONEY_WITHDRAW)).and(Cloudy.isPlayer()))
                         .required("amount", DoubleParser.doubleParser(0))
                         .flag(
@@ -38,7 +40,7 @@ public class CmdMoneyWithdraw implements Cmd {
         );
     }
 
-    private void handle(CommandContext<Sender> context) {
+    public void handle(CommandContext<Sender> context) {
         double amount = context.get("amount");
         amount = Math.abs(amount);
         if (amount == 0D) {
@@ -66,8 +68,15 @@ public class CmdMoneyWithdraw implements Cmd {
 
         boolean success = Econ.transferMoney(sender, faction, sender, amount);
 
-        if (success && FactionsPlugin.instance().conf().logging().isMoneyTransactions()) {
-            AbstractFactionsPlugin.instance().log(ChatColor.stripColor(TextUtil.parse(TL.COMMAND_MONEYWITHDRAW_WITHDRAW.toString(), sender.name(), Econ.moneyString(amount), faction.describeToLegacy(null))));
+        if (success) {
+            faction.addBankWithdraw(sender.uniqueId(), amount);
+            faction.recordFactionLog(dev.kitteh.factions.audit.AuditEntry.generic(
+                    sender.name(), sender.uniqueId(), "bank-withdraw",
+                    sender.name() + " withdrew " + Econ.moneyString(amount)
+            ));
+            if (FactionsPlugin.instance().conf().logging().isMoneyTransactions()) {
+                AbstractFactionsPlugin.instance().log(ChatColor.stripColor(TextUtil.parse(TL.COMMAND_MONEYWITHDRAW_WITHDRAW.toString(), sender.name(), Econ.moneyString(amount), faction.describeToLegacy(null))));
+            }
         }
     }
 }

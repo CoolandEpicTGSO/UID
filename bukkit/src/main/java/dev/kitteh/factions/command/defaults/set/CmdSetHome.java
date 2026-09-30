@@ -24,7 +24,10 @@ import org.incendo.cloud.minecraft.extras.MinecraftHelp;
 public class CmdSetHome implements Cmd {
     @Override
     public TriConsumer<CommandManager<Sender>, Command.Builder<Sender>, MinecraftHelp<Sender>> consumer() {
+        // Hidden from /f help — the top-level /f sethome shortcut (CmdSetHomeAlias) is the
+        // listed command. This /f set home form is kept only for backwards compatibility.
         return (manager, builder, help) -> manager.command(builder.literal("home")
+                .meta(HIDE_IN_HELP, true)
                 .commandDescription(Cloudy.desc(TL.COMMAND_SETHOME_DESCRIPTION))
                 .permission(builder.commandPermission().and(
                         Cloudy.predicate(s -> FactionsPlugin.instance().conf().factions().homes().isEnabled())
@@ -43,7 +46,7 @@ public class CmdSetHome implements Cmd {
         );
     }
 
-    private void handle(CommandContext<Sender> context) {
+    public void handle(CommandContext<Sender> context) {
         FPlayer sender = ((Sender.Player) context.sender()).fPlayer();
         Player player = ((Sender.Player) context.sender()).player();
         Faction faction = sender.faction();

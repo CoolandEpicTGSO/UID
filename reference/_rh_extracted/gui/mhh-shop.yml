@@ -1,0 +1,32 @@
+# ============================================================
+#   MHH Shop GUI
+# ============================================================
+title: "&8[&6MHH Shop&8]"
+size: 54
+filler-material: BLACK_STAINED_GLASS_PANE
+
+slots:
+  back: 49
+
+# ----------------------------------------------------------
+#  Text customisation
+# ----------------------------------------------------------
+text:
+  back-name: "&cClose"
+  back-lore:
+    - "&7Click to close."
+
+  # Info item shown at the top-centre (slot 4)
+  info-name: "&6Max Hunter Shop"
+  info-lore:
+    - "&7Exclusive shop for max level hunters."
+    - ""
+    - "&7Left-Click &8— &esell one stack"
+    - "&7Shift+Click &8— &esell all in inventory"
+    - ""
+    - "&7Perma Sell Bonus: &a+{bonus}%"
+
+  # Sell item lore appended below the configured item lore
+  sell-left-click: "&eLeft-Click &7to sell one stack"
+  sell-shift-click: "&eShift+Click &7to sell all"
+  sell-value-line: "&7Stack Value: &a{currency}{stack_value}"

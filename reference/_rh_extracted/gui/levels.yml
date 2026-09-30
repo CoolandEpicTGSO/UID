@@ -1,0 +1,51 @@
+# ============================================================
+#   Hunter Levels GUI
+# ============================================================
+title: "&8[&6Hunter Levels&8]"
+size: 54
+filler-material: BLACK_STAINED_GLASS_PANE
+
+# First slot and last slot (exclusive) used for level items per page
+content-start: 9
+content-end:   45
+
+slots:
+  back: 49
+  prev: 45
+  next: 53
+
+# ----------------------------------------------------------
+#  Text customisation
+#  Placeholders: {level} {current_level} {xp} {next_xp}
+#                {cost} {currency}
+# ----------------------------------------------------------
+text:
+  # Navigation
+  back-name: "&cBack"
+  back-lore:
+    - "&7Return to main menu"
+  prev-name: "&7< Previous"
+  next-name: "&7Next >"
+
+  # Level item status line
+  status-current: "Current Level"
+  status-unlocked: "Unlocked"
+  status-locked: "Locked"
+
+  # Level item lore sections
+  status-label: "&7Status: "
+  requirements-header: "&6Requirements:"
+  xp-line: "  &7XP: &e{xp}"
+  heads-line: "  &7{mob} Heads: &e{required}"
+  cost-line: "  &7Cost: &e${cost}"
+  unlocks-header: "&6Unlocks:"
+  unlocks-mobs-header: "&7  New Mobs:"
+  unlocks-mob-line: "&7    - &e{mob}"
+  unlocks-spawners-header: "&7  New Spawners:"
+  unlocks-spawner-line: "&7    - &e{mob} Spawner"
+  rank-up-ready: "&a&lClick to Rank Up!"
+  rank-up-not-ready: "&cComplete requirements to level up"
+  met-suffix: " &aYes"
+  unmet-suffix: " &cNo &7({progress}/{required})"
+  cost-met-suffix: " &aYes"
+  cost-unmet-suffix: " &cNo"

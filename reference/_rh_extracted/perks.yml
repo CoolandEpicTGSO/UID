@@ -1,0 +1,186 @@
+# ============================================================
+#   RegentHeadHunting - Perks
+#
+#   Perks are passive upgrades unlocked by selling enough heads.
+#
+#   Fields per perk:
+#     name               - display name (supports colour codes)
+#     description        - one-line description
+#     item               - Material shown in the GUI
+#     item-slot          - GUI slot index
+#     end-bonus          - fallback: bonus at max tier if no per-tier bonus set
+#     max-tiers          - how many tiers (default 10)
+#     default-money-cost - fallback cost if a tier has no money-cost set
+#                          (scales as tier * default-money-cost)
+#                          Set to 0 to disable money cost entirely.
+#
+#   Fields per tier:
+#     heads-required  - total heads sold needed to unlock this tier
+#     money-cost      - money required to unlock this tier
+#     bonus           - the bonus value for this tier (overrides auto-calc)
+#                       DOUBLE_DROP: 0.05 = 5% double-drop chance
+#                       SELL_BONUS:  0.05 = 5% extra sell price
+#                       XP_BONUS:    0.10 = 10% extra XP
+#     reward-commands - console commands run on unlock ({player} placeholder)
+# ============================================================
+
+perks:
+
+  DOUBLE_DROP:
+    id: DOUBLE_DROP
+    name: "&dDouble Drop"
+    description: "&7Chance to get &a2x &7heads on kill."
+    item: RABBIT_FOOT
+    item-slot: 10
+    end-bonus: 0.50
+    max-tiers: 10
+    default-money-cost: 0
+    tiers:
+      1:
+        heads-required: 2000
+        money-cost: 20000
+        bonus: 0.02
+      2:
+        heads-required: 5000
+        money-cost: 40000
+        bonus: 0.04
+      3:
+        heads-required: 9000
+        money-cost: 80000
+        bonus: 0.06
+      4:
+        heads-required: 14000
+        money-cost: 120000
+        bonus: 0.08
+      5:
+        heads-required: 20000
+        money-cost: 160000
+        bonus: 0.10
+      6:
+        heads-required: 27000
+        money-cost: 200000
+        bonus: 0.13
+      7:
+        heads-required: 35000
+        money-cost: 250000
+        bonus: 0.16
+      8:
+        heads-required: 44000
+        money-cost: 300000
+        bonus: 0.19
+      9:
+        heads-required: 54000
+        money-cost: 350000
+        bonus: 0.22
+      10:
+        heads-required: 65000
+        money-cost: 500000
+        bonus: 0.25
+        reward-commands:
+          - "broadcast &9&l{player} &ehas maxed out &dDouble Drop&e!"
+
+  SELL_BONUS:
+    id: SELL_BONUS
+    name: "&aSell Bonus"
+    description: "&7Increases sell price of heads."
+    item: EMERALD
+    item-slot: 11
+    end-bonus: 0.40
+    max-tiers: 10
+    default-money-cost: 0
+    tiers:
+      1:
+        heads-required: 4000
+        money-cost: 20000
+        bonus: 0.02
+      2:
+        heads-required: 10000
+        money-cost: 40000
+        bonus: 0.04
+      3:
+        heads-required: 18000
+        money-cost: 80000
+        bonus: 0.06
+      4:
+        heads-required: 28000
+        money-cost: 120000
+        bonus: 0.08
+      5:
+        heads-required: 40000
+        money-cost: 160000
+        bonus: 0.10
+      6:
+        heads-required: 54000
+        money-cost: 200000
+        bonus: 0.13
+      7:
+        heads-required: 70000
+        money-cost: 250000
+        bonus: 0.16
+      8:
+        heads-required: 88000
+        money-cost: 300000
+        bonus: 0.19
+      9:
+        heads-required: 108000
+        money-cost: 350000
+        bonus: 0.22
+      10:
+        heads-required: 130000
+        money-cost: 500000
+        bonus: 0.25
+        reward-commands:
+          - "broadcast &6&l{player} &9has maxed out &aSell Bonus&e!"
+
+  XP_BONUS:
+    id: XP_BONUS
+    name: "&bXP Bonus"
+    description: "&7Gain more HH XP per head sold."
+    item: NETHER_STAR
+    item-slot: 12
+    end-bonus: 1.00
+    max-tiers: 10
+    default-money-cost: 0
+    tiers:
+      1:
+        heads-required: 750
+        money-cost: 5000
+        bonus: 0.10
+      2:
+        heads-required: 1500
+        money-cost: 10000
+        bonus: 0.20
+      3:
+        heads-required: 2500
+        money-cost: 17500
+        bonus: 0.30
+      4:
+        heads-required: 4000
+        money-cost: 27500
+        bonus: 0.40
+      5:
+        heads-required: 6000
+        money-cost: 40000
+        bonus: 0.50
+      6:
+        heads-required: 8500
+        money-cost: 55000
+        bonus: 0.60
+      7:
+        heads-required: 11500
+        money-cost: 72500
+        bonus: 0.70
+      8:
+        heads-required: 15000
+        money-cost: 80000
+        bonus: 0.80
+      9:
+        heads-required: 19000
+        money-cost: 90000
+        bonus: 0.90
+      10:
+        heads-required: 25000
+        money-cost: 100000
+        bonus: 1.00
+        reward-commands:
+          - "broadcast &9&l{player} &ehas maxed out &bXP Bonus&e!"

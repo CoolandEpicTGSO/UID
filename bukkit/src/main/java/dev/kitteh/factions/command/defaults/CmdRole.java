@@ -73,6 +73,29 @@ public class CmdRole implements Cmd {
             );
 
             manager.command(build.meta(HIDE_IN_HELP, true).handler(ctx -> help.queryCommands(Cmd.rootCommand() + " role <member>", ctx.sender())));
+
+            // Top-level shortcuts: /f promote <ign>, /f demote <ign>, /f leader <ign>
+            manager.command(
+                    builder.literal("promote")
+                            .commandDescription(Description.of("Promote a faction member to the next role"))
+                            .permission(builder.commandPermission().and(Cloudy.hasPermission(Permission.PROMOTE).and(Cloudy.hasSelfFactionPerms(PermissibleActions.PROMOTE))))
+                            .required("member", FPlayerParser.of(FPlayerParser.Include.SAME_FACTION))
+                            .handler(this::handlePromote)
+            );
+            manager.command(
+                    builder.literal("demote")
+                            .commandDescription(Description.of("Demote a faction member to the previous role"))
+                            .permission(builder.commandPermission().and(Cloudy.hasPermission(Permission.PROMOTE).and(Cloudy.hasSelfFactionPerms(PermissibleActions.PROMOTE))))
+                            .required("member", FPlayerParser.of(FPlayerParser.Include.SAME_FACTION))
+                            .handler(this::handleDemote)
+            );
+            manager.command(
+                    builder.literal("leader")
+                            .commandDescription(Description.of("Hand over faction leadership"))
+                            .permission(builder.commandPermission().and(Cloudy.isAtLeastRole(Role.ADMIN).and(Cloudy.hasPermission(Permission.ADMIN))))
+                            .required("member", FPlayerParser.of(FPlayerParser.Include.SAME_FACTION))
+                            .handler(this::handleAdmin)
+            );
         };
     }
 
@@ -115,10 +138,20 @@ public class CmdRole implements Cmd {
             return;
         }
 
+        Role oldRole = target.role();
         target.role(targetNewRole);
         if (target.asPlayer() instanceof Player player) {
             player.updateCommands();
         }
+
+        // Audit log
+        boolean promoted = targetNewRole.value > oldRole.value;
+        sender.faction().recordFactionLog(dev.kitteh.factions.audit.AuditEntry.generic(
+                sender.name(), sender.uniqueId(),
+                promoted ? "promote" : "demote",
+                sender.name() + " " + (promoted ? "promoted" : "demoted") + " " + target.name()
+                        + " from " + oldRole.name() + " to " + targetNewRole.name()
+        ));
 
         target.msgLegacy(TL.COMMAND_ROLE_UPDATED, target.name(), targetNewRole.nicename);
         sender.msgLegacy(TL.COMMAND_ROLE_UPDATED, target.name(), targetNewRole.nicename);
@@ -150,6 +183,11 @@ public class CmdRole implements Cmd {
         boolean noColeaders = sender.faction().members(Role.COLEADER).isEmpty();
         sender.role((allowMultipleColeaders || noColeaders) ? Role.COLEADER : Role.MODERATOR);
         target.role(Role.ADMIN);
+
+        sender.faction().recordFactionLog(dev.kitteh.factions.audit.AuditEntry.generic(
+                sender.name(), sender.uniqueId(), "leader",
+                sender.name() + " handed leader to " + target.name()
+        ));
         if (sender.asPlayer() instanceof Player player) {
             player.updateCommands();
         }

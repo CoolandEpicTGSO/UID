@@ -31,7 +31,11 @@ public class CmdRelation implements Cmd {
                     .commandDescription(Description.of(tl.getDescription()))
                     .permission(builder.commandPermission().and(Cloudy.isAtLeastRole(Role.MODERATOR)));
 
-            Command.Builder<Sender> relationBuilder = build.required("faction", FactionParser.of(FactionParser.Include.PLAYERS));
+            // The verbose `/f relation <faction> <ally|enemy|...>` subcommands are kept for
+            // backwards compatibility but hidden from /f help — the clean top-level
+            // /f ally, /f enemy, /f neutral, /f truce shortcuts are the listed commands.
+            Command.Builder<Sender> relationBuilder = build.meta(HIDE_IN_HELP, true)
+                    .required("faction", FactionParser.of(FactionParser.Include.PLAYERS));
 
             manager.command(relationBuilder.literal(tl.getCommandAlly()).handler(ctx -> this.handleRelation(ctx, Relation.ALLY)));
             manager.command(relationBuilder.literal(tl.getCommandTruce()).handler(ctx -> this.handleRelation(ctx, Relation.TRUCE)));
@@ -41,7 +45,23 @@ public class CmdRelation implements Cmd {
             manager.command(build.meta(HIDE_IN_HELP, true).handler(ctx ->
                     help.queryCommands(Cmd.rootCommand() + " " + tl.getFirstAlias() + " <faction>", ctx.sender()))
             );
+
+            // Top-level shortcuts: /f ally <faction>, /f enemy <faction>, /f neutral <faction>, /f truce <faction>
+            registerShortcut(manager, builder, tl.getCommandAlly(), Relation.ALLY);
+            registerShortcut(manager, builder, tl.getCommandEnemy(), Relation.ENEMY);
+            registerShortcut(manager, builder, tl.getCommandNeutral(), Relation.NEUTRAL);
+            registerShortcut(manager, builder, tl.getCommandTruce(), Relation.TRUCE);
         };
+    }
+
+    private void registerShortcut(CommandManager<Sender> manager, Command.Builder<Sender> builder, String literal, Relation relation) {
+        manager.command(
+                builder.literal(literal)
+                        .commandDescription(Description.of("Set faction relation to " + relation.translation()))
+                        .permission(builder.commandPermission().and(Cloudy.isAtLeastRole(Role.MODERATOR)))
+                        .required("faction", FactionParser.of(FactionParser.Include.PLAYERS))
+                        .handler(ctx -> this.handleRelation(ctx, relation))
+        );
     }
 
     private void handleRelation(CommandContext<Sender> context, Relation targetRelation) {
@@ -51,6 +71,11 @@ public class CmdRelation implements Cmd {
         Faction them = context.get("faction");
 
         var tl = FactionsPlugin.instance().tl().commands().relation();
+
+        if (!faction.hasAccess(sender, dev.kitteh.factions.permissible.PermissibleActions.RELATION, sender.lastStoodAt())) {
+            sender.sendRichMessage("<red>You do not have permission to change faction relations.");
+            return;
+        }
 
         if (!them.isNormal()) {
             sender.sendRichMessage(tl.getDenySystemFaction());

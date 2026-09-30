@@ -1,0 +1,68 @@
+# ============================================================
+#   Spawner Upgrade GUI
+# ============================================================
+title: "&8[&eSpawner Upgrades&8]"
+size: 54
+filler-material: BLACK_STAINED_GLASS_PANE
+
+slots:
+  info:  13
+  speed: 21
+  stack: 23
+  close: 49
+
+# ----------------------------------------------------------
+#  Text customisation
+#  Placeholders: {mob} {speed_tier} {max_tier} {delay}
+#                {stack_tier} {count} {cost} {material}
+#                {current_tier} {next_tier} {cur_sec}
+#                {next_sec} {cur_count} {next_count}
+# ----------------------------------------------------------
+text:
+  # Info item
+  info-name: "&e{mob} Spawner"
+  info-lore:
+    - "&7Mob: &e{mob}"
+    - ""
+    - "&6Speed Upgrade &7(Prismarine Shards)"
+    - "  &7Tier: &a{speed_tier}/{max_tier}"
+    - "  &7Current Delay: &a{delay}s"
+    - ""
+    - "&6Stack Upgrade &7(Prismarine Shards)"
+    - "  &7Tier: &a{stack_tier}/{max_tier}"
+    - "  &7Current Spawn Count: &a{count} mobs"
+
+  # Close button
+  close-name: "&cClose"
+
+  # Speed upgrade button
+  speed-name: "&bSpeed Upgrade &7[Tier {next_tier}]"
+  speed-lore:
+    - "&7Reduces the time between spawns."
+    - ""
+    - "&7Current Tier: &e{current_tier}/{max_tier} &7(delay: &e{cur_sec}s&7)"
+    - "&7Next Tier:    &e{next_tier}/{max_tier} &7(delay: &e{next_sec}s&7)"
+    - ""
+    - "&7Cost: &e{cost} Prismarine Shards"
+    - ""
+    - "&aClick to upgrade!"
+  speed-maxed-name: "&a&lSpeed Maxed!"
+  speed-maxed-lore:
+    - "&7Spawner delay: &a{cur_sec}s"
+    - "&7This upgrade is fully maxed."
+
+  # Stack upgrade button
+  stack-name: "&6Stack Upgrade &7[Tier {next_tier}]"
+  stack-lore:
+    - "&7Increases mobs spawned per cycle."
+    - ""
+    - "&7Current Tier: &e{current_tier}/{max_tier} &7({cur_count} mobs/cycle)"
+    - "&7Next Tier:    &e{next_tier}/{max_tier} &7({next_count} mobs/cycle)"
+    - ""
+    - "&7Cost: &e{cost} Prismarine Shards"
+    - ""
+    - "&aClick to upgrade!"
+  stack-maxed-name: "&a&lStack Maxed!"
+  stack-maxed-lore:
+    - "&7Spawn count: &a{cur_count} mobs"
+    - "&7This upgrade is fully maxed."

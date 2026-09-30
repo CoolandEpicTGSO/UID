@@ -76,6 +76,13 @@ public class CmdTNTWithdraw implements Cmd {
         }
 
         faction.tntBank(faction.tntBank() - amount + notTaken);
-        sender.msgLegacy(TL.COMMAND_TNT_WITHDRAW_MESSAGE, (amount - notTaken), faction.tntBank());
+        int withdrawn = amount - notTaken;
+        if (withdrawn > 0) {
+            faction.recordFactionLog(dev.kitteh.factions.audit.AuditEntry.generic(
+                    sender.name(), sender.uniqueId(), "tnt-withdraw",
+                    sender.name() + " withdrew " + withdrawn + " TNT (bank: " + faction.tntBank() + ")"
+            ));
+        }
+        sender.msgLegacy(TL.COMMAND_TNT_WITHDRAW_MESSAGE, withdrawn, faction.tntBank());
     }
 }

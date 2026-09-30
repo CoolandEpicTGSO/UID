@@ -1,0 +1,127 @@
+# ============================================================
+#   RegentHeadHunting - Spawner Fragments
+#
+#   Players collect tier-based fragments and redeem them in
+#   the Spawner Fragments GUI for mystery spawners of that tier.
+#
+#   Tiers: basic, advanced, extreme
+#   Each tier unlocks its own mystery spawner slot in the GUI.
+#
+#   cost: how many fragments of that tier are needed per redemption
+#   spawner-pool: list of EntityType names — one is picked randomly
+# ============================================================
+
+fragments:
+  # How many fragments per tier are consumed to receive one mystery spawner
+  basic-cost: 10
+  advanced-cost: 20
+  extreme-cost: 35
+
+  # Items given when redeeming a mystery spawner (one mob is picked at random)
+  # EntityType names — must match mobs tracked in levels.yml
+  # Levels 1-5
+  basic-pool:
+    - CHICKEN
+    - COW
+    - RABBIT
+    - SQUID
+    - SKELETON
+
+  # Levels 6-10
+  advanced-pool:
+    - SPIDER
+    - SILVERFISH
+    - SLIME
+    - BLAZE
+    - HOGLIN
+
+  # Levels 11-16
+  extreme-pool:
+    - ENDERMAN
+    - MAGMA_CUBE
+    - VINDICATOR
+    - GHAST
+    - PIGLIN
+
+  # -----------------------------------------------------------
+  #  Fragment item appearance (per tier)
+  #  {tier} placeholder replaced with capitalised tier name
+  # -----------------------------------------------------------
+  items:
+    basic:
+      material: PRISMARINE_SHARD
+      name: "&7[&aBasic&7] &fSpawner Fragment"
+      lore:
+        - "&8▸ &7Tier: &aBasic"
+        - ""
+        - "&7Collect &a{cost} &7of these and right-click"
+        - "&7to redeem a &aBasic Mystery Spawner&7."
+        - ""
+        - "&8Right-click to open the redemption menu."
+
+    advanced:
+      material: AMETHYST_SHARD
+      name: "&7[&9Advanced&7] &fSpawner Fragment"
+      lore:
+        - "&8▸ &7Tier: &9Advanced"
+        - ""
+        - "&7Collect &9{cost} &7of these and right-click"
+        - "&7to redeem an &9Advanced Mystery Spawner&7."
+        - ""
+        - "&8Right-click to open the redemption menu."
+
+    extreme:
+      material: NETHER_STAR
+      name: "&7[&cExtreme&7] &fSpawner Fragment"
+      lore:
+        - "&8▸ &7Tier: &cExtreme"
+        - ""
+        - "&7Collect &c{cost} &7of these and right-click"
+        - "&7to redeem an &cExtreme Mystery Spawner&7."
+        - ""
+        - "&8Right-click to open the redemption menu."
+
+  # -----------------------------------------------------------
+  #  Mystery spawner item appearance (per tier)
+  #  Given to the player on redemption.
+  #  Right-click this item to receive one random spawner of that tier.
+  # -----------------------------------------------------------
+  mystery-spawners:
+    basic:
+      material: SPAWNER
+      name: "&a&lMystery Basic Spawner"
+      lore:
+        - "&8▸ &7Tier: &aBasic &8(HH Lvl 1-5)"
+        - ""
+        - "&7Right-click to unwrap and receive"
+        - "&7a random &aBasic &7spawner."
+        - ""
+        - "&7Possible mobs:"
+        - "&8- &aChicken, Cow, Rabbit"
+        - "&8- &aSquid, Skeleton"
+
+    advanced:
+      material: SPAWNER
+      name: "&9&lMystery Advanced Spawner"
+      lore:
+        - "&8▸ &7Tier: &9Advanced &8(HH Lvl 6-10)"
+        - ""
+        - "&7Right-click to unwrap and receive"
+        - "&7a random &9Advanced &7spawner."
+        - ""
+        - "&7Possible mobs:"
+        - "&8- &9Spider, Silverfish, Slime"
+        - "&8- &9Blaze, Hoglin"
+
+    extreme:
+      material: SPAWNER
+      name: "&c&lMystery Extreme Spawner"
+      lore:
+        - "&8▸ &7Tier: &cExtreme &8(HH Lvl 11-16)"
+        - ""
+        - "&7Right-click to unwrap and receive"
+        - "&7a random &cExtreme &7spawner."
+        - ""
+        - "&7Possible mobs:"
+        - "&8- &cEnderman, Magma Cube, Vindicator"
+        - "&8- &cGhast, Piglin"

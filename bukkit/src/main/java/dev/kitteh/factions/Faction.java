@@ -292,6 +292,16 @@ public non-sealed interface Faction extends Participator, Selectable {
 
     void clearWarps();
 
+    /**
+     * Per-warp role override: returns the set of role names (lowercase, e.g. "admin", "moderator")
+     * allowed to use the given warp via the GUI. If the warp has no override (returns null or empty),
+     * fall back to the default WARP permissible-action check.
+     */
+    java.util.Set<String> warpAllowedRoles(String warpName);
+
+    /** Set the allowed roles for a warp. Pass an empty set to clear the override (default behavior resumes). */
+    void warpAllowedRoles(String warpName, java.util.Set<String> roleNames);
+
     @ApiStatus.AvailableSince("4.2.0")
     default int maxWarps() {
         int lvl = this.upgradeLevel(Upgrades.WARPS);
@@ -312,6 +322,60 @@ public non-sealed interface Faction extends Participator, Selectable {
     void deInvite(FPlayer fplayer);
 
     boolean hasInvite(FPlayer fplayer);
+
+    // ── Faction Roster ──────────────────────────────────────────────────────
+
+    /**
+     * Pre-approved roster: map of UUIDs → Role. Players on this map can join without an invite,
+     * and on join their role is set to the value here.
+     */
+    java.util.Map<UUID, dev.kitteh.factions.permissible.Role> rosterRoles();
+
+    /** Convenience: just the UUIDs on the roster. */
+    default Set<UUID> roster() {
+        return rosterRoles().keySet();
+    }
+
+    /**
+     * Add a player to the roster with the given role. Returns true if added or role updated.
+     * Returns false if the roster is full (and the player isn't already on it).
+     * Reject role == ADMIN — leader cannot be pre-rostered.
+     */
+    boolean rosterAdd(UUID playerId, dev.kitteh.factions.permissible.Role role);
+
+    /** Add with default role (NORMAL / member). */
+    default boolean rosterAdd(UUID playerId) {
+        return rosterAdd(playerId, dev.kitteh.factions.permissible.Role.NORMAL);
+    }
+
+    /** Update an existing roster entry's role. Returns true if the player is on the roster. */
+    boolean rosterSetRole(UUID playerId, dev.kitteh.factions.permissible.Role role);
+
+    /** The role assigned to the given roster entry, or null if not on the roster. */
+    dev.kitteh.factions.permissible.Role rosterRoleOf(UUID playerId);
+
+    /** Remove a player from the roster. Returns true if they were on it. */
+    boolean rosterRemove(UUID playerId);
+
+    /** Whether the given player is on the faction's roster. */
+    boolean isOnRoster(UUID playerId);
+
+    // ── Faction Owners (leader-takeover trust list) ─────────────────────────
+
+    /**
+     * Set of UUIDs that the current leader has marked as trusted owners.
+     * Persists through kicks/leaves — only explicit removal clears the entry.
+     */
+    Set<UUID> owners();
+
+    /** Add a UUID to the owners list. Returns true if newly added. */
+    boolean ownersAdd(UUID playerId);
+
+    /** Remove a UUID from the owners list. Returns true if they were on it. */
+    boolean ownersRemove(UUID playerId);
+
+    /** Whether the given UUID is a trusted owner. */
+    boolean isOwner(UUID playerId);
 
     void ban(FPlayer target, FPlayer banner);
 
@@ -438,6 +502,133 @@ public non-sealed interface Faction extends Participator, Selectable {
     int upgradeLevel(Upgrade upgrade);
 
     void upgradeLevel(Upgrade upgrade, int level);
+
+    // ── Faction Levels ──────────────────────────────────────────────────────
+
+    long factionXp();
+
+    void factionXp(long xp);
+
+    int factionLevel();
+
+    void factionLevel(int level);
+
+    int factionPoints();
+
+    void factionPoints(int points);
+
+    void addFactionPoints(int amount);
+
+    boolean spendFactionPoints(int amount);
+
+    // ── Custom Upgrade Tiers ────────────────────────────────────────────────
+
+    int customUpgradeTier(String upgradeKey);
+
+    void customUpgradeTier(String upgradeKey, int tier);
+
+    // ── Faction PV (Private Vault) ──────────────────────────────────────────
+
+    String[] pvContents();
+
+    void pvContents(String[] contents);
+
+    // ── Faction Effects ─────────────────────────────────────────────────────
+
+    long effectCooldownEnd();
+
+    void effectCooldownEnd(long epochMillis);
+
+    default boolean effectOnCooldown() {
+        return System.currentTimeMillis() < this.effectCooldownEnd();
+    }
+
+    /**
+     * Faction effect inventory — stockpile of purchased / admin-granted effect activations,
+     * keyed by a string token of the form {@code EFFECT_NAME:DURATION_SECONDS}.
+     * Each entry records how many uses are currently saved.
+     */
+    java.util.Map<String, Integer> effectInventory();
+
+    /** Add one or more uses of a given effect-duration to the saved inventory. */
+    void addEffectToInventory(String effectName, int durationSeconds, int count);
+
+    /**
+     * Consume one use of the given effect-duration. Returns true if a use was consumed.
+     * Returns false if no uses are available.
+     */
+    boolean consumeEffectFromInventory(String effectName, int durationSeconds);
+
+    /**
+     * Faction booster inventory — stockpile of earned (level-up / mission reward) faction
+     * boosters, keyed by a string token of the form {@code TYPE:MULT_X100:MINUTES}, where
+     * MULT_X100 is the multiplier × 100 (e.g. 150 = 1.5x). Each entry records how many are saved.
+     */
+    java.util.Map<String, Integer> boosterInventory();
+
+    /** Add one or more of a rolled booster (type + multiplier ×100 + minutes) to the inventory. */
+    void addBoosterToInventory(String boosterType, int multiplierX100, int minutes, int count);
+
+    /**
+     * Consume one of the given booster. Returns true if one was consumed,
+     * false if none are available.
+     */
+    boolean consumeBoosterFromInventory(String boosterType, int multiplierX100, int minutes);
+
+    // ── Faction Audit Logs ──────────────────────────────────────────────────
+
+    /**
+     * Append a faction-management audit event (/f logs). Caps at an internal limit, evicting oldest.
+     */
+    void recordFactionLog(dev.kitteh.factions.audit.AuditEntry entry);
+
+    /** All faction-management entries, oldest first. */
+    java.util.List<dev.kitteh.factions.audit.AuditEntry> factionLog();
+
+    /** Wipes all entries from the faction-management log. */
+    void clearFactionLog();
+
+    /** Append a per-block history event (/f inspect). Same eviction policy. */
+    void recordBlockLog(dev.kitteh.factions.audit.AuditEntry entry);
+
+    /** Block history entries newest first that match the given coords. */
+    java.util.List<dev.kitteh.factions.audit.AuditEntry> blockLogAt(String world, int x, int y, int z);
+
+    // ── Bank Contribution Tracking ──────────────────────────────────────────
+
+    /** Add to a member's lifetime deposit total for this faction's bank. */
+    void addBankDeposit(java.util.UUID member, double amount);
+
+    /** Add to a member's lifetime withdrawal total. */
+    void addBankWithdraw(java.util.UUID member, double amount);
+
+    /** Total deposited by a member to this faction's bank, all-time. */
+    double bankDepositOf(java.util.UUID member);
+
+    /** Total withdrawn by a member from this faction's bank, all-time. */
+    double bankWithdrawOf(java.util.UUID member);
+
+    /** Snapshot of all members' deposit totals (UUID → amount). Read-only. */
+    java.util.Map<java.util.UUID, Double> bankDepositLeaderboard();
+
+    /** Snapshot of all members' withdraw totals (UUID → amount). Read-only. */
+    java.util.Map<java.util.UUID, Double> bankWithdrawLeaderboard();
+
+    // ── Faction Missions ────────────────────────────────────────────────────
+
+    long missionProgress(String missionId);
+
+    void missionProgress(String missionId, long value);
+
+    long missionLastReset(String category);
+
+    void missionLastReset(String category, long epochMillis);
+
+    /** Active mission IDs for a category (rotation pool selection). May be empty if not yet rolled. */
+    java.util.List<String> missionActiveIds(String category);
+
+    /** Set the active mission IDs for a category. */
+    void missionActiveIds(String category, java.util.List<String> ids);
 
     Relation relationWish(Faction otherFaction);
 

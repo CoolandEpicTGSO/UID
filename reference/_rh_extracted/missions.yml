@@ -1,0 +1,898 @@
+# ============================================================
+#   RegentHeadHunting - Missions
+#
+#   Three categories:
+#     daily  - reset every day at the configured hour
+#     weekly - reset on the configured day each week
+#     elite  - permanent one-time completions, never reset
+#
+#   Each reset, 8 daily and 6 weekly missions are randomly
+#   selected from the pools below. The same mission cannot
+#   appear twice in one day/week, and the system avoids
+#   repeating the previous rotation where possible.
+#
+#   Mission types (single-challenge):
+#     KILL_ANY              - kill any mob tracked by the plugin
+#     KILL_MOB              - kill a specific mob (set "mob: MOB_TYPE")
+#     KILL_PLAYER           - kill other players
+#     SELL_HEADS            - sell any mob heads
+#     SELL_PLAYER_HEADS     - sell player heads specifically
+#     SELL_SPECIFIC_MOB_HEADS - sell heads of a specific mob (set "mob")
+#     MINE_ORE              - mine any ore block
+#     MINE_SPECIFIC_ORE     - mine a specific ore (set "ore: MATERIAL")
+#     FARM_CROP             - harvest fully-grown crops
+#
+#   Fields:
+#     name, description, type, mob, ore, target,
+#     reward-xp, reward-money, reward-commands, icon
+#     (slot is not used in pool missions — position is assigned dynamically)
+# ============================================================
+
+missions:
+  daily-reset-hour: 0
+  weekly-reset-day: MONDAY
+  daily-active-count: 8
+  weekly-active-count: 6
+
+  # ----------------------------------------------------------
+  #  Bonus Loot Tables
+  #  One bonus reward is rolled per mission claim.
+  #  weight: relative probability (higher = more common)
+  #  commands: console commands run for the player ({player} placeholder)
+  #  display: shown in the mission lore as "+ Bonus Reward"
+  # ----------------------------------------------------------
+  daily-bonus-loot:
+    common_xp:
+      weight: 40
+      display: "&7+ &e1x Experience Bottle"
+      commands:
+        - "give {player} experience_bottle 1"
+    uncommon_xp:
+      weight: 25
+      display: "&7+ &e8x Experience Bottles"
+      commands:
+        - "give {player} experience_bottle 8"
+    rare_xp:
+      weight: 15
+      display: "&7+ &e32x Experience Bottles"
+      commands:
+        - "give {player} experience_bottle 32"
+    common_money:
+      weight: 30
+      display: "&7+ &a$500 &7bonus"
+      commands:
+        - "eco give {player} 500"
+    uncommon_money:
+      weight: 18
+      display: "&7+ &a$2,000 &7bonus"
+      commands:
+        - "eco give {player} 2000"
+    rare_money:
+      weight: 8
+      display: "&7+ &a$5,000 &7bonus"
+      commands:
+        - "eco give {player} 5000"
+    uncommon_key:
+      weight: 12
+      display: "&7+ &61x Crate Key"
+      commands:
+        - "crates key give {player} key1 1"
+    rare_key:
+      weight: 4
+      display: "&7+ &62x Crate Keys"
+      commands:
+        - "crates key give {player} key1 2"
+    epic_key:
+      weight: 1
+      display: "&d+ &51x Rare Crate Key"
+      commands:
+        - "crates key give {player} key2 1"
+
+  weekly-bonus-loot:
+    common_money:
+      weight: 30
+      display: "&7+ &a$5,000 &7bonus"
+      commands:
+        - "eco give {player} 5000"
+    uncommon_money:
+      weight: 20
+      display: "&7+ &a$15,000 &7bonus"
+      commands:
+        - "eco give {player} 15000"
+    rare_money:
+      weight: 10
+      display: "&7+ &a$40,000 &7bonus"
+      commands:
+        - "eco give {player} 40000"
+    uncommon_xp:
+      weight: 25
+      display: "&7+ &e64x Experience Bottles"
+      commands:
+        - "give {player} experience_bottle 64"
+    rare_xp:
+      weight: 15
+      display: "&7+ &e128x Experience Bottles"
+      commands:
+        - "give {player} experience_bottle 128"
+    uncommon_key:
+      weight: 18
+      display: "&7+ &62x Crate Keys"
+      commands:
+        - "crates key give {player} key1 2"
+    rare_key:
+      weight: 8
+      display: "&7+ &63x Rare Crate Keys"
+      commands:
+        - "crates key give {player} key2 3"
+    epic_key:
+      weight: 3
+      display: "&d+ &51x Epic Crate Key"
+      commands:
+        - "crates key give {player} key3 1"
+    ultra_key:
+      weight: 1
+      display: "&6&l+ &62x Epic Crate Keys"
+      commands:
+        - "crates key give {player} key3 2"
+
+  # ----------------------------------------------------------
+  #  Daily Mission Pool — 40 missions, 8 selected per day
+  # ----------------------------------------------------------
+  daily:
+    # --- Kill Any ---
+    mission_d1:
+      name: "&eDaily Grind"
+      description: "&7Kill &a{target} &7mobs today."
+      type: KILL_ANY
+      target: 250
+      reward-xp: 200
+      reward-money: 5000.0
+      reward-commands: []
+      icon: IRON_SWORD
+
+    mission_d2:
+      name: "&eMob Slayer"
+      description: "&7Kill &a{target} &7mobs today."
+      type: KILL_ANY
+      target: 500
+      reward-xp: 400
+      reward-money: 7500.0
+      reward-commands: []
+      icon: DIAMOND_SWORD
+
+    mission_d3:
+      name: "&eMass Slaughter"
+      description: "&7Kill &a{target} &7mobs today."
+      type: KILL_ANY
+      target: 1000
+      reward-xp: 700
+      reward-money: 10000.0
+      reward-commands: []
+      icon: NETHERITE_SWORD
+
+    # --- Kill Specific Mob ---
+    mission_d4:
+      name: "&eSkeleton Hunter"
+      description: "&7Kill &a{target} &7Skeletons today."
+      type: KILL_MOB
+      mob: SKELETON
+      target: 500
+      reward-xp: 500
+      reward-money: 6000.0
+      reward-commands: []
+      icon: BONE
+
+    mission_d5:
+      name: "&eChicken Patrol"
+      description: "&7Kill &a{target} &7Chickens today."
+      type: KILL_MOB
+      mob: CHICKEN
+      target: 1000
+      reward-xp: 300
+      reward-money: 3000.0
+      reward-commands: []
+      icon: FEATHER
+
+    mission_d6:
+      name: "&eSheep Farmer"
+      description: "&7Kill &a{target} &7Sheep today."
+      type: KILL_MOB
+      mob: SHEEP
+      target: 350
+      reward-xp: 350
+      reward-money: 4000.0
+      reward-commands: []
+      icon: MUTTON
+
+    mission_d7:
+      name: "&eZombie Patrol"
+      description: "&7Kill &a{target} &7Zombies today."
+      type: KILL_MOB
+      mob: ZOMBIE
+      target: 750
+      reward-xp: 450
+      reward-money: 5500.0
+      reward-commands: []
+      icon: ROTTEN_FLESH
+
+    mission_d8:
+      name: "&eSpider Squasher"
+      description: "&7Kill &a{target} &7Spiders today."
+      type: KILL_MOB
+      mob: SPIDER
+      target: 600
+      reward-xp: 500
+      reward-money: 6000.0
+      reward-commands: []
+      icon: STRING
+
+    mission_d9:
+      name: "&eBlaze Burner"
+      description: "&7Kill &a{target} &7Blazes today."
+      type: KILL_MOB
+      mob: BLAZE
+      target: 300
+      reward-xp: 600
+      reward-money: 7000.0
+      reward-commands: []
+      icon: BLAZE_ROD
+
+    mission_d10:
+      name: "&eCow Culling"
+      description: "&7Kill &a{target} &7Cows today."
+      type: KILL_MOB
+      mob: COW
+      target: 500
+      reward-xp: 300
+      reward-money: 3500.0
+      reward-commands: []
+      icon: BEEF
+
+    mission_d11:
+      name: "&eCreeper Crusher"
+      description: "&7Kill &a{target} &7Creepers today."
+      type: KILL_MOB
+      mob: CREEPER
+      target: 400
+      reward-xp: 550
+      reward-money: 6500.0
+      reward-commands: []
+      icon: GUNPOWDER
+
+    mission_d12:
+      name: "&eEnderman Ender"
+      description: "&7Kill &a{target} &7Endermen today."
+      type: KILL_MOB
+      mob: ENDERMAN
+      target: 600
+      reward-xp: 650
+      reward-money: 8000.0
+      reward-commands: []
+      icon: ENDER_PEARL
+
+    mission_d13:
+      name: "&eSlime Stomper"
+      description: "&7Kill &a{target} &7Slimes today."
+      type: KILL_MOB
+      mob: SLIME
+      target: 800
+      reward-xp: 400
+      reward-money: 5000.0
+      reward-commands: []
+      icon: SLIME_BALL
+
+    mission_d14:
+      name: "&eGolem Hustle"
+      description: "&7Kill &a{target} &7Iron Golems today."
+      type: KILL_MOB
+      mob: IRON_GOLEM
+      target: 600
+      reward-xp: 420
+      reward-money: 5500.0
+      reward-commands: []
+      icon: SAND
+
+    mission_d15:
+      name: "&eCow Stopper"
+      description: "&7Kill &a{target} &7Cow today."
+      type: KILL_MOB
+      mob: COW
+      target: 400
+      reward-xp: 480
+      reward-money: 6000.0
+      reward-commands: []
+      icon: ARROW
+
+    mission_d16:
+      name: "&eSilverfish Puncher"
+      description: "&7Kill &a{target} &7Silverfish today."
+      type: KILL_MOB
+      mob: SILVERFISH
+      target: 600
+      reward-xp: 280
+      reward-money: 3000.0
+      reward-commands: []
+      icon: ENDSTONE
+
+    # --- Sell Heads ---
+    mission_d17:
+      name: "&eSell Frenzy"
+      description: "&7Sell &a{target} &7mob heads today."
+      type: SELL_HEADS
+      target: 1000
+      reward-xp: 500
+      reward-money: 6000.0
+      reward-commands: []
+      icon: GOLD_INGOT
+
+    mission_d18:
+      name: "&eHead Merchant"
+      description: "&7Sell &a{target} &7mob heads today."
+      type: SELL_HEADS
+      target: 2000
+      reward-xp: 750
+      reward-money: 9000.0
+      reward-commands: []
+      icon: EMERALD
+
+    mission_d19:
+      name: "&eFisherman"
+      description: "&7Sell &a{target} &7Squid heads today."
+      type: SELL_SPECIFIC_MOB_HEADS
+      mob: SQUID
+      target: 500
+      reward-xp: 450
+      reward-money: 5500.0
+      reward-commands: []
+      icon: INK_SAC
+
+    mission_d20:
+      name: "&eBone Trader"
+      description: "&7Sell &a{target} &7Skeleton heads today."
+      type: SELL_SPECIFIC_MOB_HEADS
+      mob: SKELETON
+      target: 750
+      reward-xp: 500
+      reward-money: 6000.0
+      reward-commands: []
+      icon: SKELETON_SKULL
+
+    mission_d21:
+      name: "&eSilverfish Dealer"
+      description: "&7Sell &a{target} &7Silverfish heads today."
+      type: SELL_SPECIFIC_MOB_HEADS
+      mob: SILVERFISH
+      target: 750
+      reward-xp: 500
+      reward-money: 6000.0
+      reward-commands: []
+      icon: ENDSTONE
+
+    mission_d22:
+      name: "&eChicken Trader"
+      description: "&7Sell &a{target} &7Chicken heads today."
+      type: SELL_SPECIFIC_MOB_HEADS
+      mob: CHICKEN
+      target: 1000
+      reward-xp: 350
+      reward-money: 4000.0
+      reward-commands: []
+      icon: CHICKEN
+
+    mission_d23:
+      name: "&eSpider Seller"
+      description: "&7Sell &a{target} &7Spider heads today."
+      type: SELL_SPECIFIC_MOB_HEADS
+      mob: SPIDER
+      target: 600
+      reward-xp: 480
+      reward-money: 5500.0
+      reward-commands: []
+      icon: STRING
+
+    # --- Mining ---
+    mission_d24:
+      name: "&eMiner's Warmup"
+      description: "&7Mine &a{target} &7ore blocks today."
+      type: MINE_ORE
+      target: 256
+      reward-xp: 400
+      reward-money: 5000.0
+      reward-commands: []
+      icon: STONE_PICKAXE
+
+    mission_d25:
+      name: "&eOre Rush"
+      description: "&7Mine &a{target} &7ore blocks today."
+      type: MINE_ORE
+      target: 512
+      reward-xp: 700
+      reward-money: 8000.0
+      reward-commands: []
+      icon: IRON_PICKAXE
+
+    mission_d26:
+      name: "&eCoal Miner"
+      description: "&7Mine &a{target} &7coal ore today."
+      type: MINE_SPECIFIC_ORE
+      ore: COAL_ORE
+      target: 128
+      reward-xp: 300
+      reward-money: 3500.0
+      reward-commands: []
+      icon: COAL
+
+    mission_d27:
+      name: "&eIron Digger"
+      description: "&7Mine &a{target} &7iron ore today."
+      type: MINE_SPECIFIC_ORE
+      ore: IRON_ORE
+      target: 128
+      reward-xp: 400
+      reward-money: 5000.0
+      reward-commands: []
+      icon: IRON_INGOT
+
+    mission_d28:
+      name: "&eGold Seeker"
+      description: "&7Mine &a{target} &7gold ore today."
+      type: MINE_SPECIFIC_ORE
+      ore: GOLD_ORE
+      target: 64
+      reward-xp: 500
+      reward-money: 6500.0
+      reward-commands: []
+      icon: GOLD_INGOT
+
+    mission_d29:
+      name: "&eDiamond Chaser"
+      description: "&7Mine &a{target} &7diamond ore today."
+      type: MINE_SPECIFIC_ORE
+      ore: DIAMOND_ORE
+      target: 32
+      reward-xp: 800
+      reward-money: 10000.0
+      reward-commands: []
+      icon: DIAMOND
+
+    mission_d30:
+      name: "&eCopper Collector"
+      description: "&7Mine &a{target} &7copper ore today."
+      type: MINE_SPECIFIC_ORE
+      ore: COPPER_ORE
+      target: 192
+      reward-xp: 350
+      reward-money: 4000.0
+      reward-commands: []
+      icon: COPPER_INGOT
+
+    mission_d31:
+      name: "&eRedstone Runner"
+      description: "&7Mine &a{target} &7redstone ore today."
+      type: MINE_SPECIFIC_ORE
+      ore: REDSTONE_ORE
+      target: 128
+      reward-xp: 380
+      reward-money: 4500.0
+      reward-commands: []
+      icon: REDSTONE
+
+    mission_d32:
+      name: "&eLapis Looter"
+      description: "&7Mine &a{target} &7lapis ore today."
+      type: MINE_SPECIFIC_ORE
+      ore: LAPIS_ORE
+      target: 96
+      reward-xp: 420
+      reward-money: 5000.0
+      reward-commands: []
+      icon: LAPIS_LAZULI
+
+    # --- Farming ---
+    mission_d33:
+      name: "&eHarvest Hand"
+      description: "&7Harvest &a{target} &7crops today."
+      type: FARM_CROP
+      target: 500
+      reward-xp: 300
+      reward-money: 3500.0
+      reward-commands: []
+      icon: WHEAT
+
+    mission_d34:
+      name: "&eCrop Cutter"
+      description: "&7Harvest &a{target} &7crops today."
+      type: FARM_CROP
+      target: 1000
+      reward-xp: 500
+      reward-money: 6000.0
+      reward-commands: []
+      icon: WHEAT_SEEDS
+
+    mission_d35:
+      name: "&eFarm Frenzy"
+      description: "&7Harvest &a{target} &7crops today."
+      type: FARM_CROP
+      target: 2000
+      reward-xp: 800
+      reward-money: 9000.0
+      reward-commands: []
+      icon: HAY_BLOCK
+
+    # --- PvP ---
+    mission_d36:
+      name: "&eBlood Sport"
+      description: "&7Kill &a{target} &7player today."
+      type: KILL_PLAYER
+      target: 1
+      reward-xp: 500
+      reward-money: 5000.0
+      reward-commands: []
+      icon: PLAYER_HEAD
+
+    mission_d37:
+      name: "&eHunter"
+      description: "&7Kill &a{target} &7players today."
+      type: KILL_PLAYER
+      target: 3
+      reward-xp: 800
+      reward-money: 8000.0
+      reward-commands: []
+      icon: PLAYER_HEAD
+
+    mission_d38:
+      name: "&eWarrior"
+      description: "&7Kill &a{target} &7players today."
+      type: KILL_PLAYER
+      target: 5
+      reward-xp: 1000
+      reward-money: 10000.0
+      reward-commands: []
+      icon: PLAYER_HEAD
+
+    # --- More mob sells ---
+    mission_d39:
+      name: "&eCow Collector"
+      description: "&7Sell &a{target} &7Cow heads today."
+      type: SELL_SPECIFIC_MOB_HEADS
+      mob: COW
+      target: 600
+      reward-xp: 350
+      reward-money: 4000.0
+      reward-commands: []
+      icon: BEEF
+
+    mission_d40:
+      name: "&eCreeper Collector"
+      description: "&7Sell &a{target} &7Creeper heads today."
+      type: SELL_SPECIFIC_MOB_HEADS
+      mob: CREEPER
+      target: 400
+      reward-xp: 550
+      reward-money: 7000.0
+      reward-commands: []
+      icon: CREEPER_HEAD
+
+  # ----------------------------------------------------------
+  #  Weekly Mission Pool — 25 missions, 6 selected per week
+  # ----------------------------------------------------------
+  weekly:
+    mission_w1:
+      name: "&bWeekly Grind"
+      description: "&7Kill &a{target} &7mobs this week."
+      type: KILL_ANY
+      target: 10000
+      reward-xp: 2000
+      reward-money: 12500.0
+      reward-commands: []
+      icon: DIAMOND_SWORD
+
+    mission_w2:
+      name: "&bMob Massacre"
+      description: "&7Kill &a{target} &7mobs this week."
+      type: KILL_ANY
+      target: 20000
+      reward-xp: 1200
+      reward-money: 20000.0
+      reward-commands: []
+      icon: NETHERITE_SWORD
+
+    mission_w3:
+      name: "&bHead Collector"
+      description: "&7Sell &a{target} &7mob heads this week."
+      type: SELL_HEADS
+      target: 10000
+      reward-xp: 1500
+      reward-money: 12500.0
+      reward-commands: []
+      icon: PLAYER_HEAD
+
+    mission_w4:
+      name: "&bHead Baron"
+      description: "&7Sell &a{target} &7mob heads this week."
+      type: SELL_HEADS
+      target: 25000
+      reward-xp: 1200
+      reward-money: 22500.0
+      reward-commands: []
+      icon: SKELETON_SKULL
+
+    mission_w5:
+      name: "&bBoss Slayer"
+      description: "&7Kill &a{target} &7Hoglins this week."
+      type: KILL_MOB
+      mob: HOGLIN
+      target: 5000
+      reward-xp: 1200
+      reward-money: 25000.0
+      reward-commands: []
+      icon: IRON_BLOCK
+
+    mission_w6:
+      name: "&bNether Warrior"
+      description: "&7Kill &a{target} &7Blazes this week."
+      type: KILL_MOB
+      mob: BLAZE
+      target: 7500
+      reward-xp: 950
+      reward-money: 20000.0
+      reward-commands: []
+      icon: GOLD_BLOCK
+
+    mission_w7:
+      name: "&bSkeleton Army"
+      description: "&7Kill &a{target} &7Skeletons this week."
+      type: KILL_MOB
+      mob: SKELETON
+      target: 8000
+      reward-xp: 925
+      reward-money: 17500.0
+      reward-commands: []
+      icon: BONE
+
+    mission_w8:
+      name: "&bZombie Horde"
+      description: "&7Kill &a{target} &7Zombies this week."
+      type: KILL_MOB
+      mob: ZOMBIE
+      target: 10000
+      reward-xp: 750
+      reward-money: 17500.0
+      reward-commands: []
+      icon: ROTTEN_FLESH
+
+    mission_w9:
+      name: "&bEnderman Hunt"
+      description: "&7Kill &a{target} &7Endermen this week."
+      type: KILL_MOB
+      mob: ENDERMAN
+      target: 5000
+      reward-xp: 875
+      reward-money: 22500.0
+      reward-commands: []
+      icon: ENDER_PEARL
+
+    mission_w10:
+      name: "&bCreeper Carnage"
+      description: "&7Kill &a{target} &7Creepers this week."
+      type: KILL_MOB
+      mob: CREEPER
+      target: 7500
+      reward-xp: 945
+      reward-money: 20000.0
+      reward-commands: []
+      icon: GUNPOWDER
+
+    mission_w11:
+      name: "&bDiamond Digger"
+      description: "&7Mine &a{target} &7diamond ore this week."
+      type: MINE_SPECIFIC_ORE
+      ore: DIAMOND_ORE
+      target: 320
+      reward-xp: 800
+      reward-money: 20000.0
+      reward-commands: []
+      icon: DIAMOND
+
+    mission_w12:
+      name: "&bOre Baron"
+      description: "&7Mine &a{target} &7ore blocks this week."
+      type: MINE_ORE
+      target: 2000
+      reward-xp: 1100
+      reward-money: 15000.0
+      reward-commands: []
+      icon: IRON_PICKAXE
+
+    mission_w13:
+      name: "&bDeep Miner"
+      description: "&7Mine &a{target} &7ore blocks this week."
+      type: MINE_ORE
+      target: 4000
+      reward-xp: 1200
+      reward-money: 22500.0
+      reward-commands: []
+      icon: DIAMOND_PICKAXE
+
+    mission_w14:
+      name: "&bGold Rush"
+      description: "&7Mine &a{target} &7gold ore this week."
+      type: MINE_SPECIFIC_ORE
+      ore: GOLD_ORE
+      target: 512
+      reward-xp: 750
+      reward-money: 15000.0
+      reward-commands: []
+      icon: GOLD_INGOT
+
+    mission_w15:
+      name: "&bIron Will"
+      description: "&7Mine &a{target} &7iron ore this week."
+      type: MINE_SPECIFIC_ORE
+      ore: IRON_ORE
+      target: 1000
+      reward-xp: 550
+      reward-money: 12500.0
+      reward-commands: []
+      icon: IRON_INGOT
+
+    mission_w16:
+      name: "&bHarvest Season"
+      description: "&7Harvest &a{target} &7crops this week."
+      type: FARM_CROP
+      target: 10000
+      reward-xp: 1250
+      reward-money: 15000.0
+      reward-commands: []
+      icon: WHEAT
+
+    mission_w17:
+      name: "&bMega Harvest"
+      description: "&7Harvest &a{target} &7crops this week."
+      type: FARM_CROP
+      target: 25000
+      reward-xp: 1500
+      reward-money: 25000.0
+      reward-commands: []
+      icon: HAY_BLOCK
+
+    mission_w18:
+      name: "&bEnderman Seller"
+      description: "&7Sell &a{target} &7Enderman heads this week."
+      type: SELL_SPECIFIC_MOB_HEADS
+      mob: ENDERMAN
+      target: 5000
+      reward-xp: 1000
+      reward-money: 22500.0
+      reward-commands: []
+      icon: ENDER_PEARL
+
+    mission_w19:
+      name: "&bBlaze Seller"
+      description: "&7Sell &a{target} &7Blaze heads this week."
+      type: SELL_SPECIFIC_MOB_HEADS
+      mob: BLAZE
+      target: 4000
+      reward-xp: 850
+      reward-money: 20000.0
+      reward-commands: []
+      icon: BLAZE_ROD
+
+    mission_w20:
+      name: "&bHoglin Hunter"
+      description: "&7Sell &a{target} &7Hoglin heads this week."
+      type: SELL_SPECIFIC_MOB_HEADS
+      mob: HOGLIN
+      target: 3000
+      reward-xp: 650
+      reward-money: 22500.0
+      reward-commands: []
+      icon: PORKCHOP
+
+    mission_w21:
+      name: "&bPvP Champion"
+      description: "&7Kill &a{target} &7players this week."
+      type: KILL_PLAYER
+      target: 10
+      reward-xp: 1000
+      reward-money: 20000.0
+      reward-commands: []
+      icon: PLAYER_HEAD
+
+    mission_w22:
+      name: "&bWarmonger"
+      description: "&7Kill &a{target} &7players this week."
+      type: KILL_PLAYER
+      target: 20
+      reward-xp: 1250
+      reward-money: 25000.0
+      reward-commands: []
+      icon: PLAYER_HEAD
+
+    mission_w23:
+      name: "&bCreeper Seller"
+      description: "&7Sell &a{target} &7Creeper heads this week."
+      type: SELL_SPECIFIC_MOB_HEADS
+      mob: CREEPER
+      target: 5000
+      reward-xp: 1500
+      reward-money: 20000.0
+      reward-commands: []
+      icon: CREEPER_HEAD
+
+    mission_w24:
+      name: "&bSpider Slayer"
+      description: "&7Kill &a{target} &7Spiders this week."
+      type: KILL_MOB
+      mob: SPIDER
+      target: 10000
+      reward-xp: 1100
+      reward-money: 17500.0
+      reward-commands: []
+      icon: STRING
+
+    mission_w25:
+      name: "&bSlime Slaughter"
+      description: "&7Kill &a{target} &7Slimes this week."
+      type: KILL_MOB
+      mob: SLIME
+      target: 8000
+      reward-xp: 1400
+      reward-money: 15000.0
+      reward-commands: []
+      icon: SLIME_BALL
+
+  # ----------------------------------------------------------
+  #  Elite Missions — permanent one-time challenges
+  # ----------------------------------------------------------
+  elite:
+    mission_e1:
+      name: "&4&lElite: Grand Hunter"
+      description: "&7Kill mobs and sell heads. One-time challenge."
+      reward-xp: 25000
+      reward-money: 3500000.0
+      reward-commands:
+        - "give {player} netherite_smithing_template 1"
+        - "crates key give {player} key3 5"
+      icon: NETHERITE_SWORD
+      slot: 10
+      challenges:
+        c1:
+          type: KILL_ANY
+          label: "&7Mobs Killed:"
+          target: 30000
+        c2:
+          type: SELL_HEADS
+          label: "&7Heads Sold:"
+          target: 100000
+
+    mission_e2:
+      name: "&4&lElite: Head Baron"
+      description: "&7Sell basic, advanced &7and extreme heads. One-time challenge."
+      reward-xp: 30000
+      reward-money: 2500000.0
+      reward-commands:
+        - "give {player} elytra 1"
+        - "crates key give {player} key3 10"
+      icon: BEACON
+      slot: 11
+      challenges:
+        c1:
+          type: SELL_HEADS_TIER
+          head-tier: basic
+          label: "&7Basic Heads:"
+          target: 50000
+        c2:
+          type: SELL_HEADS_TIER
+          head-tier: advanced
+          label: "&7Advanced Heads:"
+          target: 40000
+        c3:
+          type: SELL_HEADS_TIER
+          head-tier: extreme
+          label: "&7Extreme Heads:"
+          target: 30000
+        c4:
+          type: SELL_HEADS
+          label: "&7Total Heads:"
+          target: 100000

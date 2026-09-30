@@ -66,10 +66,24 @@ public class PermissionsConfig {
     private transient List<PermSelector> overridePermissionsOrderList = null;
 
     public PermissionsConfig() {
+        // Role: ADMIN (Leader) — leader-only by default. Note: ADMIN already gets all perms via hasAccess() short-circuit,
+        // but we list explicit ones here so the GUI shows ALLOW for them and so leader-only perms have an explicit selector.
+        this.defaultPermissionsOrder.add(new RoleAtLeastSelector(Role.ADMIN).serialize());
+        this.defaultPermissions.put(new RoleAtLeastSelector(Role.ADMIN).serialize(), ImmutableMap.<String, Boolean>builder()
+                .put(PermissibleActions.MANAGEPERMS.name(), true)
+                .put(PermissibleActions.CHUNKITEMS.name(), true)
+                .put(PermissibleActions.INSPECT.name(), true)
+                .build());
+
         this.defaultPermissionsOrder.add(new RoleAtLeastSelector(Role.COLEADER).serialize());
         this.defaultPermissions.put(new RoleAtLeastSelector(Role.COLEADER).serialize(), ImmutableMap.<String, Boolean>builder()
                 .put(PermissibleActions.SETHOME.name(), true)
                 .put(PermissibleActions.ECONOMY.name(), true)
+                .put(PermissibleActions.TAG.name(), true)
+                .put(PermissibleActions.DESCRIPTION.name(), true)
+                .put(PermissibleActions.MOTD.name(), true)
+                .put(PermissibleActions.SETWARP.name(), true)
+                .put(PermissibleActions.UPGRADE.name(), true)
                 .build());
 
         this.defaultPermissionsOrder.add(new RoleAtLeastSelector(Role.MODERATOR).serialize());
@@ -79,31 +93,39 @@ public class PermissionsConfig {
                 .put(PermissibleActions.KICK.name(), true)
                 .put(PermissibleActions.LISTCLAIMS.name(), true)
                 .put(PermissibleActions.PROMOTE.name(), true)
-                .put(PermissibleActions.SETWARP.name(), true)
                 .put(PermissibleActions.TERRITORY.name(), true)
                 .put(PermissibleActions.TNTWITHDRAW.name(), true)
+                .put(PermissibleActions.TNTDEPOSIT.name(), true)
                 .put(PermissibleActions.SHIELD.name(), true)
+                .put(PermissibleActions.STATUS.name(), true)
+                .put(PermissibleActions.RELATION.name(), true)
+                .put(PermissibleActions.TITLE.name(), true)
+                .put(PermissibleActions.PV.name(), true)
+                .put(PermissibleActions.EFFECTS.name(), true)
+                .put(PermissibleActions.WARP.name(), true)
+                .put(PermissibleActions.DOOR.name(), true)
+                .put(PermissibleActions.BUTTON.name(), true)
+                .put(PermissibleActions.LEVER.name(), true)
+                .put(PermissibleActions.LOGS.name(), true)
+                .put(PermissibleActions.INSPECT.name(), true)
                 .build());
 
         this.defaultPermissionsOrder.add(new RoleAtLeastSelector(Role.NORMAL).serialize());
         this.defaultPermissions.put(new RoleAtLeastSelector(Role.NORMAL).serialize(), ImmutableMap.<String, Boolean>builder()
                 .put(PermissibleActions.FROSTWALK.name(), true)
                 .put(PermissibleActions.FLY.name(), true)
+                .put(PermissibleActions.BUILD.name(), true)
+                .put(PermissibleActions.DESTROY.name(), true)
+                .put(PermissibleActions.BANKDEPOSIT.name(), true)
                 .build()
         );
 
         this.defaultPermissionsOrder.add(new RoleAtLeastSelector(Role.RECRUIT).serialize());
         this.defaultPermissions.put(new RoleAtLeastSelector(Role.RECRUIT).serialize(), ImmutableMap.<String, Boolean>builder()
-                .put(PermissibleActions.BUILD.name(), true)
-                .put(PermissibleActions.BUTTON.name(), true)
                 .put(PermissibleActions.CONTAINER.name(), true)
-                .put(PermissibleActions.DESTROY.name(), true)
-                .put(PermissibleActions.DOOR.name(), true)
                 .put(PermissibleActions.HOME.name(), true)
                 .put(PermissibleActions.ITEM.name(), true)
-                .put(PermissibleActions.LEVER.name(), true)
                 .put(PermissibleActions.PLATE.name(), true)
-                .put(PermissibleActions.TNTDEPOSIT.name(), true)
                 .put(PermissibleActions.WARP.name(), true)
                 .build());
 

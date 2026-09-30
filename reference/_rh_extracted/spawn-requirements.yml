@@ -1,0 +1,317 @@
+# ============================================================
+#   RegentHeadHunting - Spawner Spawn Requirements
+#
+#   Controls when HH spawners are allowed to spawn mobs.
+#   Vanilla spawner conditions are OVERRIDDEN by these rules.
+#
+#   enabled: true/false — toggle conditions for this mob only.
+#            Set false to let this mob always spawn freely.
+#
+#   force-spawn: true/false — if true, the plugin spawns this mob
+#            directly via a repeating task instead of relying on
+#            vanilla's spawner tick. Required for mobs that vanilla
+#            refuses to spawn (Squid, Piglin, Vindicator, etc.).
+#            Defaults to true. Set false only if you want vanilla
+#            tick behavior for a specific mob.
+#
+#   adult-only: true/false — if true, any baby variant that spawns
+#            will be immediately grown to adult. Useful for mobs like
+#            Zombie, Hoglin, Cow, etc. that can spawn as babies.
+#            Defaults to false.
+#
+#   Fields per mob:
+#     light          - Required sky or block light level (see syntax below)
+#     environment    - Block type the mob spawns INSIDE (usually AIR or WATER)
+#     ground         - Block type(s) the mob must spawn ON TOP OF
+#     check-daylight - If true: daytime = light 15, nighttime = light 0
+#                      If false: light level is read from the block directly
+#
+#   Light level syntax (range 0-15):
+#     5-10   light level from 5 to 10
+#     -8     light level from 0 to 8
+#     9+     light level from 9 to 15
+#     11     only light level 11
+#     ''     (empty) no light restriction
+#
+#   Environment / ground values:
+#     'STONE'          include this specific block type
+#     '~STONE'         exclude this specific block type
+#     SOLID            matches any solid block
+#     AIR              matches air and insta-break blocks
+#     WATER            matches water
+#     LAVA             matches lava
+#     SLAB             all slab types
+#     STAIRS           all stair types
+#     FENCE            fence, fence gate, and wall types
+#
+#   ground can be a single value or a list.
+#   Leave as '' for no restriction.
+# ============================================================
+
+Requirements:
+
+  # ---- Level 1 ----
+  CHICKEN:
+    enabled: false
+    force-spawn: true
+    adult-only: true
+    light: 9+
+    environment: AIR
+    ground: GRASS_BLOCK
+    check-daylight: false
+
+  # ---- Level 2 ----
+  COW:
+    enabled: false
+    force-spawn: true
+    adult-only: true
+    light: 9+
+    environment: AIR
+    ground: GRASS_BLOCK
+    check-daylight: false
+
+  # ---- Level 3 ----
+  RABBIT:
+    enabled: false
+    force-spawn: true
+    adult-only: true
+    light: ''
+    environment: AIR
+    ground:
+      - GRASS_BLOCK
+      - SAND
+      - RED_SAND
+      - SNOW_BLOCK
+    check-daylight: false
+
+  # ---- Level 4 ----
+  SQUID:
+    enabled: false
+    force-spawn: true
+    light: ''
+    environment: ''
+    ground: ''
+    check-daylight: false
+
+  # ---- Level 5 ----
+  SKELETON:
+    enabled: false
+    force-spawn: true
+    light: '-7'
+    environment: AIR
+    ground: SOLID
+    check-daylight: true
+
+  # ---- Level 6 ----
+  SPIDER:
+    enabled: false
+    force-spawn: true
+    light: '-7'
+    environment: AIR
+    ground: SOLID
+    check-daylight: true
+
+  # ---- Level 7 ----
+  SILVERFISH:
+    enabled: false
+    force-spawn: true
+    light: '-7'
+    environment: AIR
+    ground: SOLID
+    check-daylight: false
+
+  # ---- Level 8 ----
+  SLIME:
+    enabled: false
+    force-spawn: true
+    light: ''
+    environment: AIR
+    ground: SOLID
+    check-daylight: false
+
+  # ---- Level 9 ----
+  BLAZE:
+    enabled: false
+    force-spawn: true
+    light: ''
+    environment: AIR
+    ground: ''
+    check-daylight: false
+
+  # ---- Level 9 (economy spawner) ----
+  IRON_GOLEM:
+    enabled: false
+    force-spawn: true
+    light: ''
+    environment: AIR
+    ground: ''
+    check-daylight: false
+
+  # ---- Level 10 ----
+  HOGLIN:
+    enabled: false
+    force-spawn: true
+    adult-only: true
+    light: ''
+    environment: AIR
+    ground: ''
+    check-daylight: false
+
+  ZOMBIFIED_PIGLIN:
+    enabled: false
+    force-spawn: true
+    adult-only: true
+    light: ''
+    environment: AIR
+    ground: ''
+    check-daylight: false
+
+  # ---- Level 11 ----
+  ENDERMAN:
+    enabled: false
+    force-spawn: true
+    light: '-7'
+    environment: AIR
+    ground: SOLID
+    check-daylight: false
+
+  # ---- Level 12 ----
+  MAGMA_CUBE:
+    enabled: false
+    force-spawn: true
+    light: ''
+    environment: AIR
+    ground: ''
+    check-daylight: false
+
+  # ---- Level 13 ----
+  VINDICATOR:
+    enabled: false
+    force-spawn: true
+    light: ''
+    environment: ''
+    ground: ''
+    check-daylight: false
+
+  # ---- Level 14 ----
+  GHAST:
+    enabled: false
+    force-spawn: true
+    light: ''
+    environment: AIR
+    ground: ''
+    check-daylight: false
+
+  # ---- Level 15 ----
+  PIGLIN:
+    enabled: false
+    force-spawn: true
+    adult-only: true
+    light: ''
+    environment: ''
+    ground: ''
+    check-daylight: false
+
+  # ---- Level 16 (max) ----
+  CREEPER:
+    enabled: false
+    force-spawn: true
+    light: '-7'
+    environment: AIR
+    ground: SOLID
+    check-daylight: true
+
+  # ---- Non-progression mobs (still supported) ----
+  ZOMBIE:
+    enabled: false
+    force-spawn: true
+    adult-only: true
+    light: '-7'
+    environment: AIR
+    ground: SOLID
+    check-daylight: true
+
+  GUARDIAN:
+    enabled: false
+    force-spawn: true
+    light: ''
+    environment: ''
+    ground: ''
+    check-daylight: false
+
+  WITHER_SKELETON:
+    enabled: false
+    force-spawn: true
+    light: ''
+    environment: AIR
+    ground: ''
+    check-daylight: false
+
+  STRAY:
+    enabled: false
+    force-spawn: true
+    light: '-7'
+    environment: AIR
+    ground: SOLID
+    check-daylight: true
+
+  HUSK:
+    enabled: false
+    force-spawn: true
+    adult-only: true
+    light: '-7'
+    environment: AIR
+    ground:
+      - SAND
+      - RED_SAND
+    check-daylight: true
+
+  RAVAGER:
+    enabled: false
+    force-spawn: true
+    light: '-7'
+    environment: AIR
+    ground: SOLID
+    check-daylight: true
+
+  ELDER_GUARDIAN:
+    enabled: false
+    force-spawn: true
+    light: ''
+    environment: ''
+    ground: ''
+    check-daylight: false
+
+  EVOKER:
+    enabled: false
+    force-spawn: true
+    light: '-7'
+    environment: AIR
+    ground: SOLID
+    check-daylight: true
+
+  WARDEN:
+    enabled: false
+    force-spawn: true
+    light: '-7'
+    environment: AIR
+    ground: SOLID
+    check-daylight: true
+
+  PIG:
+    enabled: false
+    force-spawn: true
+    adult-only: true
+    light: 9+
+    environment: AIR
+    ground: GRASS_BLOCK
+    check-daylight: false
+
+  SHEEP:
+    enabled: false
+    force-spawn: true
+    adult-only: true
+    light: 9+
+    environment: AIR
+    ground: GRASS_BLOCK
+    check-daylight: false

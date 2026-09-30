@@ -112,7 +112,16 @@ public enum Permission {
     DEBUG("debug"),
     UPGRADES("upgrades"),
     UPGRADES_MANAGE("upgrades.manage"),
-    WARMUP_EXEMPT("warmups.exempt");
+    WARMUP_EXEMPT("warmups.exempt"),
+    LEVEL("level"),
+    MISSIONS("missions"),
+    EFFECTS("effects"),
+    PV("pv"),
+    BANNER("banner"),
+    MANAGE_PERMS("manageperms"),
+    INSPECT("inspect"),
+    LOGS("logs"),
+    ALERT("alert");
 
     public final String node;
 

@@ -562,34 +562,16 @@ public final class Protection {
 
         Relation relation = defendFaction.relationTo(attackFaction);
 
-        // You can not hurt neutral factions
-        if (facConf.pvp().isDisablePVPBetweenNeutralFactions() && relation.isNeutral()) {
-            if (notify) {
-                attacker.sendRichMessage(FactionsPlugin.instance().tl().protection().denied().getPvpNeutral());
-            }
-            return true;
-        }
-
         // Players without faction may be hurt anywhere
         if (!defender.hasFaction()) {
             return false;
         }
 
-        // You can never hurt faction members or allies
+        // You can never hurt faction members, allies, or truces. Everything else (including
+        // NEUTRAL and ENEMY relations) is freely hittable — no need to declare enemy first.
         if (relation.isMember() || relation.isAlly() || relation.isTruce()) {
             if (notify) {
                 attacker.sendRichMessage(FactionsPlugin.instance().tl().protection().denied().getPvpCantHurt(), FPlayerResolver.of("target", defender));
-            }
-            return true;
-        }
-
-        boolean ownTerritory = defender.isInOwnTerritory();
-
-        // You can not hurt neutrals in their own territory.
-        if (ownTerritory && relation.isNeutral()) {
-            if (notify) {
-                attacker.sendRichMessage(FactionsPlugin.instance().tl().protection().denied().getPvpNeutralFail(), FPlayerResolver.of("target", defender));
-                defender.sendRichMessage(FactionsPlugin.instance().tl().protection().denied().getPvpTried(), FPlayerResolver.of("attacker", attacker));
             }
             return true;
         }

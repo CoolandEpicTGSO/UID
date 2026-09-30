@@ -1,0 +1,230 @@
+# ============================================================
+#   RegentHeadHunting - Level Progression
+#
+#   Each level defines:
+#     name              - Display name (supports color codes)
+#     required-xp       - XP needed to reach this level
+#     rankup-cost       - Money cost to rank up TO this level
+#     mob-heads-required - Mob type -> number of heads that must be sold
+#     rankup-commands   - Console commands run on rank up ({player})
+#     mobs              - Mob types unlocked at this level
+#     spawners          - Spawner types available in the Spawner Shop
+#
+#   Max level is determined by the highest number defined here.
+#   Remove levels at the bottom to lower the max level — the
+#   Spawner Shop will automatically hide those spawner types.
+#   Add more levels (17, 18, 19...) to extend progression.
+# ============================================================
+
+levels:
+
+  1:
+    name: "&7Novice I"
+    required-xp: 0
+    rankup-cost: 0.0
+    mob-heads-required:
+      CHICKEN: 250
+    rankup-commands: []
+    mobs:
+      - CHICKEN
+    spawners:
+      - CHICKEN
+
+  2:
+    name: "&7Novice II"
+    required-xp: 320
+    rankup-cost: 8000.0
+    mob-heads-required:
+      CHICKEN: 250
+    rankup-commands:
+      - "broadcast &6{player} &ehas ranked up to &7Novice II&e in HeadHunting!"
+    mobs:
+      - COW
+    spawners:
+      - COW
+
+  3:
+    name: "&eApprentice III"
+    required-xp: 800
+    rankup-cost: 15000.0
+    mob-heads-required:
+      COW: 315
+    rankup-commands:
+      - "broadcast &6{player} &ehas ranked up to &eApprentice III&e in HeadHunting!"
+    mobs:
+      - RABBIT
+    spawners:
+      - RABBIT
+
+  4:
+    name: "&eApprentice IV"
+    required-xp: 1500
+    rankup-cost: 25000.0
+    mob-heads-required:
+      RABBIT: 395
+    rankup-commands:
+      - "broadcast &6{player} &ehas ranked up to &eApprentice IV&e in HeadHunting!"
+    mobs:
+      - SQUID
+    spawners:
+      - SQUID
+
+  5:
+    name: "&bJournyman V"
+    required-xp: 2500
+    rankup-cost: 40000.0
+    mob-heads-required:
+      SQUID: 495
+    rankup-commands:
+      - "broadcast &6{player} &ehas ranked up to &bJournyman V&e in HeadHunting!"
+    mobs:
+      - SKELETON
+    spawners:
+      - SKELETON
+
+  6:
+    name: "&bJournyman VI"
+    required-xp: 7000
+    rankup-cost: 65000.0
+    mob-heads-required:
+      SKELETON: 990
+    rankup-commands:
+      - "broadcast &6{player} &ehas ranked up to &bJournyman VI&e in HeadHunting!"
+    mobs:
+      - SPIDER
+    spawners:
+      - SPIDER
+
+  7:
+    name: "&aHunter VII"
+    required-xp: 16000
+    rankup-cost: 95000.0
+    mob-heads-required:
+      SPIDER: 1240
+    rankup-commands:
+      - "broadcast &6{player} &ehas ranked up to &aHunter VII&e in HeadHunting!"
+    mobs:
+      - SILVERFISH
+    spawners:
+      - SILVERFISH
+
+  8:
+    name: "&aHunter VIII"
+    required-xp: 30000
+    rankup-cost: 140000.0
+    mob-heads-required:
+      SILVERFISH: 1550
+    rankup-commands:
+      - "broadcast &6{player} &ehas ranked up to &aHunter VIII&e in HeadHunting!"
+    mobs:
+      - SLIME
+    spawners:
+      - SLIME
+
+  9:
+    name: "&2Elite IX"
+    required-xp: 50000
+    rankup-cost: 200000.0
+    mob-heads-required:
+      SLIME: 1940
+    rankup-commands:
+      - "broadcast &6{player} &ehas ranked up to &2Elite IX&e in HeadHunting!"
+    mobs:
+      - BLAZE
+    spawners:
+      - BLAZE
+      - IRON_GOLEM
+
+  10:
+    name: "&2Elite X"
+    required-xp: 75000
+    rankup-cost: 300000.0
+    mob-heads-required:
+      BLAZE: 2425
+    rankup-commands:
+      - "broadcast &6{player} &ehas ranked up to &2Elite X&e in HeadHunting!"
+    mobs:
+      - HOGLIN
+      - IRON_GOLEM
+    spawners:
+      - HOGLIN
+      - IRON_GOLEM
+
+  11:
+    name: "&cMaster XI"
+    required-xp: 180000
+    rankup-cost: 450000.0
+    mob-heads-required:
+      HOGLIN: 4850
+    rankup-commands:
+      - "broadcast &6{player} &ehas ranked up to &cMaster XI&e in HeadHunting!"
+    mobs:
+      - ENDERMAN
+    spawners:
+      - ENDERMAN
+
+  12:
+    name: "&cMaster XII"
+    required-xp: 350000
+    rankup-cost: 1000000.0
+    mob-heads-required:
+      ENDERMAN: 6060
+    rankup-commands:
+      - "broadcast &6{player} &ehas ranked up to &cMaster XII&e in HeadHunting!"
+    mobs:
+      - MAGMA_CUBE
+    spawners:
+      - MAGMA_CUBE
+
+  13:
+    name: "&4Warlord XIII"
+    required-xp: 650000
+    rankup-cost: 1400000.0
+    mob-heads-required:
+      MAGMA_CUBE: 7580
+    rankup-commands:
+      - "broadcast &6{player} &ehas ranked up to &4Warlord XIII&e in HeadHunting!"
+    mobs:
+      - VINDICATOR
+    spawners:
+      - VINDICATOR
+
+  14:
+    name: "&4Warlord XIV"
+    required-xp: 1100000
+    rankup-cost: 1900000.0
+    mob-heads-required:
+      VINDICATOR: 9480
+    rankup-commands:
+      - "broadcast &6{player} &ehas ranked up to &4Warlord XIV&e in HeadHunting!"
+    mobs:
+      - GHAST
+    spawners:
+      - GHAST
+
+  15:
+    name: "&dLegend XV"
+    required-xp: 1800000
+    rankup-cost: 2500000.0
+    mob-heads-required:
+      GHAST: 11850
+    rankup-commands:
+      - "broadcast &6{player} &ehas ranked up to &dLegend XV&e in HeadHunting!"
+    mobs:
+      - PIGLIN
+    spawners:
+      - PIGLIN
+
+  16:
+    name: "&5Sovereign XVI"
+    required-xp: 2700000
+    rankup-cost: 3200000.0
+    mob-heads-required:
+      PIGLIN: 13500
+    rankup-commands:
+      - "broadcast &6{player} &ehas reached &5MAX LEVEL Sovereign XVI&e in HeadHunting!"
+      - "give {player} netherite_block 5"
+    mobs:
+      - CREEPER
+    spawners:
+      - CREEPER

@@ -18,6 +18,7 @@ import org.incendo.cloud.Command;
 import org.incendo.cloud.CommandManager;
 import org.incendo.cloud.context.CommandContext;
 import org.incendo.cloud.parser.standard.IntegerParser;
+import org.incendo.cloud.parser.standard.StringParser;
 
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -42,6 +43,8 @@ public class CmdClaim implements Cmd {
                                                 )
                                         )
                         )
+                        .optional("shape_or_radius", StringParser.stringParser())
+                        .optional("radius_value", IntegerParser.integerParser(1))
                         .flag(manager.flagBuilder("faction").withComponent(FactionParser.of()))
                         .flag(
                                 manager.flagBuilder("radius")
@@ -63,6 +66,24 @@ public class CmdClaim implements Cmd {
                         )
                         .handler(this::handle)
         );
+    }
+
+    private Integer resolvePositionalRadius(CommandContext<Sender> context) {
+        // Accept: /f claim <N> | /f claim s <N> | /f claim square <N>
+        String first = context.optional("shape_or_radius").map(Object::toString).orElse(null);
+        Integer second = context.optional("radius_value").map(o -> (Integer) o).orElse(null);
+
+        if (first == null) return null;
+
+        if (first.equalsIgnoreCase("s") || first.equalsIgnoreCase("square")) {
+            return second; // null means missing
+        }
+
+        try {
+            return Integer.parseInt(first);
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     private void handle(CommandContext<Sender> context) {
@@ -99,13 +120,18 @@ public class CmdClaim implements Cmd {
             return;
         }
 
-        if (context.flags().get("radius") instanceof Integer radius && radius > 1) {
+        Integer flagRadius = context.flags().get("radius") instanceof Integer i ? i : null;
+        Integer positionalRadius = resolvePositionalRadius(context);
+        Integer radius = flagRadius != null ? flagRadius : positionalRadius;
+
+        if (radius != null && radius > 1) {
             if (!Permission.CLAIM_RADIUS.has(player)) {
                 sender.msgLegacy(TL.COMMAND_CLAIM_DENIED);
                 return;
             }
 
-            new SpiralTask(claimLocation, radius) {
+            final int finalRadius = radius;
+            new SpiralTask(claimLocation, finalRadius) {
                 private int failCount = 0;
                 private final int limit = FactionsPlugin.instance().conf().factions().claims().getRadiusClaimFailureLimit() - 1;
 

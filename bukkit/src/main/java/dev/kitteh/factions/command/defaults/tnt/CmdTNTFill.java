@@ -25,9 +25,7 @@ import org.incendo.cloud.parser.standard.IntegerParser;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 import dev.kitteh.factions.util.TriConsumer;
 import org.incendo.cloud.minecraft.extras.MinecraftHelp;
@@ -60,15 +58,11 @@ public class CmdTNTFill implements Cmd {
             return;
         }
         final int radius = context.get("radius");
-        final int amount = context.get("amount");
+        // 'perDispenser' is now the amount of TNT to put into EACH dispenser, not a shared total.
+        final int perDispenser = context.get("amount");
 
-        if (radius <= 0 || amount <= 0) {
+        if (radius <= 0 || perDispenser <= 0) {
             sender.msgLegacy(TL.COMMAND_TNT_FILL_FAIL_POSITIVE);
-            return;
-        }
-
-        if (amount > faction.tntBank()) {
-            sender.msgLegacy(TL.COMMAND_TNT_FILL_FAIL_NOTENOUGH, amount);
             return;
         }
 
@@ -78,31 +72,37 @@ public class CmdTNTFill implements Cmd {
         }
 
         List<Dispenser> list = getDispensers(player.getLocation(), radius, faction);
-        Collections.reverse(list);
-
-        int remaining = amount;
-        int dispenserCount = 0;
-        boolean firstRound = true;
-
-        while (remaining > 0 && !list.isEmpty()) {
-            int per = Math.max(1, remaining / list.size());
-            Iterator<Dispenser> iterator = list.iterator();
-            while (iterator.hasNext() && remaining >= per) {
-                int left = getCount(iterator.next().getInventory().addItem(getStacks(per)).values());
-                remaining -= per - left;
-                if (firstRound && ((per - left) > 0)) {
-                    dispenserCount++;
-                }
-                if (left > 0) {
-                    iterator.remove();
-                }
-            }
-            firstRound = false;
+        if (list.isEmpty()) {
+            sender.msgLegacy(TL.COMMAND_TNT_FILL_MESSAGE, 0, 0, faction.tntBank());
+            return;
         }
 
-        faction.tntBank(faction.tntBank() - amount + remaining);
+        // Each dispenser wants up to 'perDispenser' TNT — total demand is that times the count.
+        long demand = (long) perDispenser * list.size();
+        if (faction.tntBank() <= 0) {
+            sender.msgLegacy(TL.COMMAND_TNT_FILL_FAIL_NOTENOUGH, perDispenser);
+            return;
+        }
+        // Cap total spend at what the bank actually holds.
+        int budget = (int) Math.min(demand, faction.tntBank());
 
-        sender.msgLegacy(TL.COMMAND_TNT_FILL_MESSAGE, amount - remaining, dispenserCount, faction.tntBank());
+        int deposited = 0;
+        int dispenserCount = 0;
+        for (Dispenser dispenser : list) {
+            if (budget <= 0) break;
+            int give = Math.min(perDispenser, budget);
+            int left = getCount(dispenser.getInventory().addItem(getStacks(give)).values());
+            int placed = give - left;
+            if (placed > 0) {
+                deposited += placed;
+                dispenserCount++;
+                budget -= placed;
+            }
+        }
+
+        faction.tntBank(faction.tntBank() - deposited);
+
+        sender.msgLegacy(TL.COMMAND_TNT_FILL_MESSAGE, deposited, dispenserCount, faction.tntBank());
     }
 
     static ItemStack[] getStacks(int count) {

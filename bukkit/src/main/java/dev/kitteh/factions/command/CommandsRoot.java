@@ -41,6 +41,31 @@ import dev.kitteh.factions.command.defaults.CmdVault;
 import dev.kitteh.factions.command.defaults.CmdVersion;
 import dev.kitteh.factions.command.defaults.CmdWarp;
 import dev.kitteh.factions.command.defaults.CmdZone;
+import dev.kitteh.factions.command.defaults.CmdLevel;
+import dev.kitteh.factions.command.defaults.CmdCoins;
+import dev.kitteh.factions.command.defaults.CmdAlert;
+import dev.kitteh.factions.command.defaults.CmdRoster;
+import dev.kitteh.factions.command.defaults.CmdOwners;
+import dev.kitteh.factions.command.defaults.CmdOwner;
+import dev.kitteh.factions.command.defaults.CmdInfo;
+import dev.kitteh.factions.command.defaults.CmdMissions;
+import dev.kitteh.factions.command.defaults.CmdEffects;
+import dev.kitteh.factions.command.defaults.CmdPv;
+import dev.kitteh.factions.command.defaults.CmdBanner;
+import dev.kitteh.factions.command.defaults.CmdSetHomeAlias;
+import dev.kitteh.factions.command.defaults.CmdSetWarpAlias;
+import dev.kitteh.factions.command.defaults.CmdDelWarp;
+import dev.kitteh.factions.command.defaults.CmdPerms;
+import dev.kitteh.factions.command.defaults.CmdInspect;
+import dev.kitteh.factions.command.defaults.CmdChestLogs;
+import dev.kitteh.factions.command.defaults.CmdLogs;
+import dev.kitteh.factions.command.defaults.CmdDeposit;
+import dev.kitteh.factions.command.defaults.CmdWithdraw;
+import dev.kitteh.factions.command.defaults.CmdBank;
+import dev.kitteh.factions.command.defaults.admin.CmdAdminCoins;
+import dev.kitteh.factions.command.defaults.admin.CmdAdminXp;
+import dev.kitteh.factions.command.defaults.admin.CmdAdminSetLevel;
+import dev.kitteh.factions.command.defaults.admin.CmdAdminGetEffect;
 import dev.kitteh.factions.command.defaults.admin.CmdAdminDTR;
 import dev.kitteh.factions.command.defaults.admin.CmdAdminForce;
 import dev.kitteh.factions.command.defaults.admin.CmdAdminPower;
@@ -145,6 +170,36 @@ public class CommandsRoot {
 
         manager.captionRegistry().registerProvider(new Captioner());
 
+        // Friendlier message when a player runs a faction command without a faction:
+        // the hasFaction() predicate fails with a NoPermissionException — intercept it
+        // and, if the failed permission was specifically the has-faction gate, prompt
+        // them to create or join a faction instead of the generic "no permission".
+        manager.exceptionController().registerHandler(
+                org.incendo.cloud.exception.NoPermissionException.class,
+                ctx -> {
+                    var missing = ctx.exception().missingPermission();
+                    boolean needsFaction = missing != null
+                            && missing.permissionString().contains(Cloudy.HAS_FACTION_KEY.name());
+                    Sender sender = ctx.context().sender();
+                    if (needsFaction && sender.isPlayer()) {
+                        sender.sendRichMessage(
+                                "<red>You aren't in a faction yet! "
+                                + "<gray>Use <click:suggest_command:'/" + Cmd.rootCommand() + " create '>"
+                                + "<yellow><hover:show_text:'Click to create a faction'>/"
+                                + Cmd.rootCommand() + " create <name></hover></yellow></click> "
+                                + "<gray>to start one, or <click:run_command:'/" + Cmd.rootCommand() + " list'>"
+                                + "<yellow><hover:show_text:'Click to browse factions'>/"
+                                + Cmd.rootCommand() + " list</hover></yellow></click> "
+                                + "<gray>to find one to join."
+                        );
+                    } else {
+                        // Fall back to the default no-permission rendering.
+                        ctx.context().sender().sendRichMessage("<red>"
+                                + ctx.exception().getMessage());
+                    }
+                }
+        );
+
         var main = plugin.tl().commands().generic().getCommandRoot();
         var helpTl = plugin.tl().commands().help();
 
@@ -171,8 +226,12 @@ public class CommandsRoot {
         });
 
         var admin = plugin.tl().commands().generic().getCommandAdminRoot();
+        // Gate the ENTIRE /fa root behind factions.kit.halfmod so every admin subcommand
+        // inherits the permission check. Without this, anyone could /fa claim, /fa xp,
+        // /fa coins, /fa setlevel etc. — they would only be hidden from /fa with no args.
         Command.Builder<Sender> builderAdmin = manager.commandBuilder(admin.getFirstAlias(), admin.getSecondaryAliases())
-                .permission(Cloudy.predicate(sender -> WorldUtil.isEnabled(sender.sender())));
+                .permission(Cloudy.hasPermission("factions.kit.halfmod")
+                        .and(Cloudy.predicate(sender -> WorldUtil.isEnabled(sender.sender()))));
         adminRegistry.values().forEach(reg -> {
             try {
                 reg.consumer.accept(manager, builderAdmin, help);
@@ -244,6 +303,27 @@ public class CommandsRoot {
         registerInternal("unban", new CmdUnban());
         registerInternal("unclaim", new CmdUnclaim());
         registerInternal("upgrades", new CmdUpgrades());
+        registerInternal("level", new CmdLevel());
+        registerInternal("coins", new CmdCoins());
+        registerInternal("alert", new CmdAlert());
+        registerInternal("roster", new CmdRoster());
+        registerInternal("owners", new CmdOwners());
+        registerInternal("owner", new CmdOwner());
+        registerInternal("info", new CmdInfo());
+        registerInternal("missions", new CmdMissions());
+        registerInternal("effects", new CmdEffects());
+        registerInternal("pv", new CmdPv());
+        registerInternal("banner", new CmdBanner());
+        registerInternal("sethome", new CmdSetHomeAlias());
+        registerInternal("setwarp", new CmdSetWarpAlias());
+        registerInternal("delwarp", new CmdDelWarp());
+        registerInternal("perms", new CmdPerms());
+        registerInternal("inspect", new CmdInspect());
+        registerInternal("logs", new CmdLogs());
+        registerInternal("chestlogs", new CmdChestLogs());
+        registerInternal("deposit", new CmdDeposit());
+        registerInternal("withdraw", new CmdWithdraw());
+        registerInternal("bank", new CmdBank());
         registerInternal("version", new CmdVersion());
         registerInternal("warp", new CmdWarp());
         registerInternal("zone", new CmdZone());
@@ -253,6 +333,9 @@ public class CommandsRoot {
         }
 
         registerAdminInternal("bypass", new CmdBypass());
+        registerAdminInternal("claim", new dev.kitteh.factions.command.defaults.admin.CmdAdminClaim());
+        registerAdminInternal("missions", new dev.kitteh.factions.command.defaults.admin.CmdAdminMissions());
+        registerAdminInternal("unclaim", new dev.kitteh.factions.command.defaults.admin.CmdAdminUnclaim());
         registerAdminInternal("chatspy", new CmdChatSpy());
         registerAdminInternal("dtr", new CmdAdminDTR());
         registerAdminInternal("force", new CmdAdminForce());
@@ -263,6 +346,10 @@ public class CommandsRoot {
         registerAdminInternal("set", new CmdAdminSet());
         registerAdminInternal("ticketinfo", new CmdTicketInfo());
         registerAdminInternal("tnt", new CmdAdminTNT());
+        registerAdminInternal("coins", new CmdAdminCoins());
+        registerAdminInternal("xp", new CmdAdminXp());
+        registerAdminInternal("setlevel", new CmdAdminSetLevel());
+        registerAdminInternal("geteffect", new CmdAdminGetEffect());
 
     }
 }

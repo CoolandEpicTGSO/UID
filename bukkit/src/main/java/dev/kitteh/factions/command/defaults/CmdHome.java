@@ -18,7 +18,7 @@ import dev.kitteh.factions.plugin.AbstractFactionsPlugin;
 import dev.kitteh.factions.util.Permission;
 import dev.kitteh.factions.util.SmokeUtil;
 import dev.kitteh.factions.util.TL;
-import dev.kitteh.factions.util.WarmUpUtil;
+import dev.kitteh.factions.util.TeleportCountdown;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -64,6 +64,14 @@ public class CmdHome implements Cmd {
 
         if (sender.adminBypass()) {
             AbstractFactionsPlugin.instance().teleport(player, targetFaction.home());
+            return;
+        }
+
+        // Per-player cooldown
+        long now = System.currentTimeMillis();
+        if (sender.homeCooldownEnd() > now) {
+            long remaining = (sender.homeCooldownEnd() - now + 999) / 1000;
+            sender.sendRichMessage("<red>You must wait <yellow>" + remaining + "s</yellow> before using <white>/f home</white> again.");
             return;
         }
 
@@ -136,8 +144,9 @@ public class CmdHome implements Cmd {
             return;
         }
 
-        int delay = FactionsPlugin.instance().conf().commands().home().getDelay();
-        WarmUpUtil.process(sender, WarmUpUtil.Warmup.HOME, TL.WARMUPS_NOTIFY_HOME.format(delay), () -> {
+        int configuredDelay = FactionsPlugin.instance().conf().commands().home().getDelay();
+        int delay = Math.max(configuredDelay, 5);
+        TeleportCountdown.start(player, delay, "Teleporting to faction home", () -> {
             Player plr = sender.asPlayer();
 
             if (plr == null) return;
@@ -157,6 +166,12 @@ public class CmdHome implements Cmd {
             }
 
             AbstractFactionsPlugin.instance().teleport(plr, destination);
-        }, delay);
+
+            // Apply post-teleport cooldown
+            int cooldownSecs = FactionsPlugin.instance().configManager().factionLevelsConfig().getHomeCooldownSeconds();
+            if (cooldownSecs > 0) {
+                sender.homeCooldownEnd(System.currentTimeMillis() + cooldownSecs * 1000L);
+            }
+        });
     }
 }

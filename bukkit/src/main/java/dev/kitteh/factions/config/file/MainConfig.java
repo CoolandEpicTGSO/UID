@@ -373,7 +373,7 @@ public class MainConfig {
         }
 
         public class TNT {
-            private boolean enable = false;
+            private boolean enable = true;
             @Comment("Maximum storage. Set to -1 (or lower) to disable")
             private int maxStorage = -1;
             private int maxRadius = 5;
@@ -638,10 +638,10 @@ public class MainConfig {
 
             public class Power {
                 private double playerMin = -10.0D;
-                private double playerMax = 10.0D;
-                private double playerStarting = 0.0D;
+                private double playerMax = 75.0D;
+                private double playerStarting = 50.0D;
                 @Comment("Default health rate of 0.2 takes 5 minutes to recover one power")
-                private double powerPerMinute = 0.2;
+                private double powerPerMinute = 0.5;
                 @Comment("How much is lost on death")
                 private double lossPerDeath = 4.0;
                 @Comment("Does a player regenerate power while offline?")
@@ -837,13 +837,13 @@ public class MainConfig {
                 @Comment("Chatting with faction members")
                 private boolean factionMemberChatEnabled = true;
                 @Comment("Chatting with all members at or above a role")
-                private String factionMemberChatFormat = "[<role>+] <sender:relation_color><sender:role_prefix><sender:faction:name></sender:relation_color> <<sender:name>>: <message>";
+                private String factionMemberChatFormat = "<yellow>[<role>+] <sender:relation_color><sender:role_prefix></sender:relation_color> <sender:name> » <yellow><message>";
                 @Comment("Chatting with all faction members")
-                private String factionMemberAllChatFormat = "[faction-only] <sender:relation_color><sender:role_prefix><sender:faction:name></sender:relation_color> <<sender:name>>: <message>";
+                private String factionMemberAllChatFormat = "<green>[Faction] <sender:relation_color><sender:role_prefix></sender:relation_color> <sender:name> » <green><message>";
 
                 @Comment("Chatting with faction members")
                 private boolean relationChatEnabled = true;
-                private String relationChatFormat = "[<relation>-only] <sender:relation_color><sender:role_prefix><sender:faction:name></sender:relation_color> <<sender:name>>: <message>";
+                private String relationChatFormat = "<light_purple>[<relation>] <sender:relation_color><sender:role_prefix><sender:faction:name></sender:relation_color> <sender:name> » <light_purple><message>";
 
                 @Comment("Prefix to add to chat only seen because the staff member is spying on all chat")
                 private String spyingPrefix = "[MCspy] ";
@@ -930,7 +930,7 @@ public class MainConfig {
                 private boolean tagPadBefore = false;
                 private boolean tagPadAfter = true;
                 private String tagFormat = "%s§f";
-                private String tagNoFaction = "§6[§ano-faction§6]§r";
+                private String tagNoFaction = "§2Wild§r";
                 private boolean alwaysShowChatTag = true;
 
                 public boolean isTagHandledByAnotherPlugin() {
@@ -1101,7 +1101,7 @@ public class MainConfig {
         }
 
         public class PVP {
-            private boolean disablePVPBetweenNeutralFactions = false;
+            private boolean disablePVPBetweenNeutralFactions = true;
             private boolean disablePVPForFactionlessPlayers = false;
             private boolean enablePVPAgainstFactionlessInAttackersLand = false;
             private boolean disablePeacefulPVPInWarzone = true;
@@ -1213,7 +1213,8 @@ public class MainConfig {
             private int radiusClaimFailureLimit = 9;
             private Set<String> worldsNoClaiming = new HashSet<>() {
                 {
-                    this.add("exampleWorldName");
+                    this.add("farm");
+                    this.add("guardian");
                 }
             };
             @Comment("""
@@ -1301,7 +1302,7 @@ public class MainConfig {
                           bed: Bed""")
                 private String destination = "home, bed, spawn";
                 @Comment("The world in which the spawn exists")
-                private String destinationSpawnWorld = "world";
+                private String destinationSpawnWorld = "s3world";
 
                 @Comment("Options: MEMBER, ALLY, TRUCE, NEUTRAL, ENEMY\n" +
                         "Incorrectly spelled entries default to NEUTRAL")
@@ -1390,18 +1391,15 @@ public class MainConfig {
             @Comment("Commands which will be prevented when in claimed territory of a neutral faction")
             private Set<String> territoryNeutralDenyCommands = new HashSet<>() {
                 {
-                    this.add("exampleCommand");
+                    this.add("sethome");
+                    this.add("esethome");
                 }
             };
             @Comment("Commands which will be prevented when in claimed territory of an enemy faction")
             private Set<String> territoryEnemyDenyCommands = new HashSet<>() {
                 {
-                    this.add("home");
                     this.add("sethome");
-                    this.add("spawn");
-                    this.add("tpahere");
-                    this.add("tpaccept");
-                    this.add("tpa");
+                    this.add("esethome");
                 }
             };
             @Comment("Commands which will be prevented when in claimed territory of an ally faction")
@@ -1956,7 +1954,7 @@ public class MainConfig {
             private boolean newFactionsDefaultPeaceful = false;
 
             @Comment("When faction membership hits this limit, players will no longer be able to join using /f join; default is 0, no limit")
-            private int factionMemberLimit = 0;
+            private int factionMemberLimit = 10;
 
             @Comment("What faction ID to start new players in when they first join the server; default is 0, \"no faction\"")
             private int newPlayerStartingFactionID = dev.kitteh.factions.Factions.ID_WILDERNESS;
@@ -2334,10 +2332,10 @@ public class MainConfig {
                 
                 The value "enabled" must be true for any economy features
                 Make sure that you confirm the "defaultWorld" setting is a valid world name
-                
+
                 ******************
                 """)
-        private boolean enabled = false;
+        private boolean enabled = true;
         @Comment("Universe accounts are receivers/sources of money in faction transactions. Not commonly used.")
         private String universeAccount = "";
         @Comment("See the universe account comment. If your economy plugin uses a UUID, and you need a specific one for a universe account, add this too")
@@ -2366,7 +2364,7 @@ public class MainConfig {
         private double costKick = 0.0;
         private double costInvite = 0.0;
         private double costHome = 0.0;
-        private double costTag = 0.0;
+        private double costTag = 1000000.0;
         private double costDesc = 0.0;
         private double costTitle = 0.0;
         private double costList = 0.0;
@@ -2376,7 +2374,7 @@ public class MainConfig {
         private double costStuck = 0.0;
         private double costDTR = 0.0;
         private double costOpen = 0.0;
-        private double costAlly = 0.0;
+        private double costAlly = 50000.0;
         private double costTruce = 0.0;
         private double costEnemy = 0.0;
         private double costNeutral = 0.0;

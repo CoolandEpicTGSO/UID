@@ -38,9 +38,24 @@ public class CmdShow implements Cmd {
 
         return (manager, builder, help) -> {
             var tl = FactionsPlugin.instance().tl().commands().show();
+            var showBuilder = builder.literal(tl.getFirstAlias(), tl.getSecondaryAliases())
+                    .commandDescription(Cloudy.desc(tl.getDescription()))
+                    .permission(builder.commandPermission().and(Cloudy.hasPermission(Permission.SHOW)))
+                    .optional("faction", FactionParser.of(FactionParser.Include.SELF, FactionParser.Include.PLAYERS))
+                    .handler(this::handle);
+            manager.command(showBuilder);
+            // /f f as an alias for /f show (own faction quick-view)
             manager.command(
-                    builder.literal(tl.getFirstAlias(), tl.getSecondaryAliases())
-                            .commandDescription(Cloudy.desc(tl.getDescription()))
+                    builder.literal("f")
+                            .meta(Cmd.HIDE_IN_HELP, true)
+                            .permission(builder.commandPermission().and(Cloudy.hasPermission(Permission.SHOW)))
+                            .optional("faction", FactionParser.of(FactionParser.Include.SELF, FactionParser.Include.PLAYERS))
+                            .handler(this::handle)
+            );
+            // /f who [factionOrPlayer] alias
+            manager.command(
+                    builder.literal("who")
+                            .meta(Cmd.HIDE_IN_HELP, true)
                             .permission(builder.commandPermission().and(Cloudy.hasPermission(Permission.SHOW)))
                             .optional("faction", FactionParser.of(FactionParser.Include.SELF, FactionParser.Include.PLAYERS))
                             .handler(this::handle)
@@ -54,6 +69,7 @@ public class CmdShow implements Cmd {
         // add defaults to /f show in case config doesn't have it
         defaults.add("<fuuid:title><faction:relation_color><faction:name>");
         defaults.add("<gold>Description: <yellow><faction:description>");
+        defaults.add("<gold>Faction Level: <light_purple><faction:level> <dark_gray>(<faction:xp_progress>)</dark_gray>");
         defaults.add("<gold><faction:if_open>No invitation required</faction:if_open><faction:if_open:else>Invitation required</faction:if_open:else><faction:if_peaceful>.    <fuuid:color:peaceful>Peaceful");
         defaults.add("<gold>Land / Power / Max Power: <yellow><faction:claims_count></yellow> / <yellow><faction:power></yellow> / <yellow><faction:power_max>");
         defaults.add("<gold>Raidable: <faction:if_raidable><green>Yes</faction:if_raidable><faction:if_raidable:else><red>No");

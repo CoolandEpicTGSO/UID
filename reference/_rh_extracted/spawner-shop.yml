@@ -1,0 +1,42 @@
+# ============================================================
+#   RegentHeadHunting - Spawner Shop Prices
+#
+#   Prices for purchasing spawners.
+#   Players must be at the level where the mob unlocks
+#   before they can buy it (configured in levels.yml).
+#
+#   Format:
+#     MOB_TYPE: price
+# ============================================================
+
+prices:
+  CHICKEN: 8000.0
+  PIG: 12000.0
+  SHEEP: 14000.0
+  COW: 15000.0
+  ZOMBIE: 20000.0
+  RABBIT: 25000.0
+  SQUID: 40000.0
+  WITCH: 50000.0
+  SKELETON: 65000.0
+  GUARDIAN: 75000.0
+  SPIDER: 95000.0
+  STRAY: 115000.0
+  HUSK: 115000.0
+  WITHER_SKELETON: 120000.0
+  SILVERFISH: 140000.0
+  SLIME: 200000.0
+  RAVAGER: 200000.0
+  ELDER_GUARDIAN: 250000.0
+  BLAZE: 300000.0
+  EVOKER: 300000.0
+  HOGLIN: 450000.0
+  WARDEN: 500000.0
+  ENDERMAN: 1000000.0
+  IRON_GOLEM: 1200000.0
+  MAGMA_CUBE: 1400000.0
+  VINDICATOR: 1900000.0
+  GHAST: 2500000.0
+  ZOMBIFIED_PIGLIN: 3000000.0
+  PIGLIN: 3200000.0
+  CREEPER: 6000000.0

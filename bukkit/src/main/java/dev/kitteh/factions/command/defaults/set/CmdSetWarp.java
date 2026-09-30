@@ -23,8 +23,11 @@ import org.incendo.cloud.minecraft.extras.MinecraftHelp;
 public class CmdSetWarp implements Cmd {
     @Override
     public TriConsumer<CommandManager<Sender>, Command.Builder<Sender>, MinecraftHelp<Sender>> consumer() {
+        // Hidden from /f help — the top-level /f setwarp shortcut (CmdSetWarpAlias) is the
+        // listed command. This /f set warp form is kept only for backwards compatibility.
         return (manager, builder, help) -> manager.command(
                 builder.literal("warp")
+                        .meta(HIDE_IN_HELP, true)
                         .commandDescription(Cloudy.desc(TL.COMMAND_SETFWARP_DESCRIPTION))
                         .permission(builder.commandPermission().and(Cloudy.hasPermission(Permission.SETWARP).and(Cloudy.hasSelfFactionPerms(PermissibleActions.SETWARP))))
                         .required("name", StringParser.stringParser())
@@ -34,7 +37,7 @@ public class CmdSetWarp implements Cmd {
         );
     }
 
-    private void handle(org.incendo.cloud.context.CommandContext<Sender> context) {
+    public void handle(org.incendo.cloud.context.CommandContext<Sender> context) {
         Player player = ((Sender.Player) context.sender()).player();
         FPlayer sender = ((Sender.Player) context.sender()).fPlayer();
         Faction faction = sender.faction();
@@ -47,6 +50,10 @@ public class CmdSetWarp implements Cmd {
                     return;
                 }
                 faction.removeWarp(warp);
+                faction.recordFactionLog(dev.kitteh.factions.audit.AuditEntry.generic(
+                        sender.name(), sender.uniqueId(), "warp-delete",
+                        sender.name() + " deleted warp '" + warp + "'"
+                ));
                 sender.msgLegacy(TL.COMMAND_DELFWARP_DELETED, warp);
             } else {
                 sender.msgLegacy(TL.COMMAND_DELFWARP_INVALID, warp);
@@ -80,6 +87,11 @@ public class CmdSetWarp implements Cmd {
         if (password != null) {
             faction.setWarpPassword(warp, password);
         }
+        faction.recordFactionLog(dev.kitteh.factions.audit.AuditEntry.generic(
+                sender.name(), sender.uniqueId(), "warp-set",
+                sender.name() + " set warp '" + warp + "'"
+                        + " at " + (int) loc.x() + ", " + (int) loc.y() + ", " + (int) loc.z()
+        ));
         sender.msgLegacy(TL.COMMAND_SETFWARP_SET, warp, password != null ? password : "");
     }
 }

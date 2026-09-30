@@ -92,6 +92,7 @@ public abstract class MemoryFPlayer implements FPlayer {
     protected boolean showScoreboard = true;
     protected WarmUpUtil.@Nullable Warmup warmup;
     protected int warmupTask;
+    protected transient long homeCooldownEnd = 0L;
     protected boolean isAdminBypassing = false;
     protected int kills, deaths;
     protected boolean willAutoLeave = true;
@@ -1324,5 +1325,15 @@ public abstract class MemoryFPlayer implements FPlayer {
         }
         this.warmup = warmup;
         this.warmupTask = taskId;
+    }
+
+    @Override
+    public long homeCooldownEnd() {
+        return this.homeCooldownEnd;
+    }
+
+    @Override
+    public void homeCooldownEnd(long epochMillis) {
+        this.homeCooldownEnd = epochMillis;
     }
 }

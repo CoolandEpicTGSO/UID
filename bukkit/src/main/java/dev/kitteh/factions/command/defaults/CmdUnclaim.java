@@ -24,6 +24,7 @@ import org.incendo.cloud.Command;
 import org.incendo.cloud.CommandManager;
 import org.incendo.cloud.context.CommandContext;
 import org.incendo.cloud.parser.standard.IntegerParser;
+import org.incendo.cloud.parser.standard.StringParser;
 
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -47,6 +48,8 @@ public class CmdUnclaim implements Cmd {
                                                 )
                                         )
                         )
+                        .optional("shape_or_radius", StringParser.stringParser())
+                        .optional("radius_value", IntegerParser.integerParser(1))
                         .flag(manager.flagBuilder("faction").withComponent(FactionParser.of()))
                         .flag(
                                 manager.flagBuilder("radius")
@@ -113,7 +116,11 @@ public class CmdUnclaim implements Cmd {
             return;
         }
 
-        if (context.flags().get("radius") instanceof Integer radius && radius > 1) {
+        Integer flagRadius = context.flags().get("radius") instanceof Integer i ? i : null;
+        Integer positionalRadius = resolvePositionalRadius(context);
+        Integer radius = flagRadius != null ? flagRadius : positionalRadius;
+
+        if (radius != null && radius > 1) {
             if (!Permission.CLAIM_RADIUS.has(player)) {
                 sender.msgLegacy(TL.COMMAND_CLAIM_DENIED);
                 return;
@@ -141,6 +148,24 @@ public class CmdUnclaim implements Cmd {
         }
 
         sender.attemptUnclaim(forFaction, claimLocation, true);
+    }
+
+    private Integer resolvePositionalRadius(CommandContext<Sender> context) {
+        // Accept: /f unclaim <N> | /f unclaim s <N> | /f unclaim square <N>
+        String first = context.optional("shape_or_radius").map(Object::toString).orElse(null);
+        Integer second = context.optional("radius_value").map(o -> (Integer) o).orElse(null);
+
+        if (first == null) return null;
+
+        if (first.equalsIgnoreCase("s") || first.equalsIgnoreCase("square")) {
+            return second;
+        }
+
+        try {
+            return Integer.parseInt(first);
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     private void fill(FPlayer sender, FLocation loc, Faction forFaction, int limit) {
